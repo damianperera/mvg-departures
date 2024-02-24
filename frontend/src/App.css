@@ -91,17 +91,22 @@
   padding-right: 2%; /* Add padding to the left */
 }
 
-.departures td:first-child,
-.departures td:last-child {
-  width: calc(40% - 2px); /* 2/5ths of the screen width, subtracting border width */
+.departures td:first-child {
+  width: calc(20% - 2px); /* Approximately 1/5th of the screen width */
+}
+
+.departures td:nth-last-child(2) {
+  width: calc(60% - 4px); /* Approximately 3/5ths of the screen width */
 }
 
 .center {
   text-align: center;
+  font-size: calc(4vw + 10px) !important;
 }
 
 .left {
   text-align: left;
+  font-size: calc(4vw + 10px) !important;
 }
 
 .right {
