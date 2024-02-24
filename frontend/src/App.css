@@ -84,8 +84,16 @@
 
 .departures td:nth-last-child(2),
 .departures td:last-child {
-  width: calc(40% - 4px); /* 2/5ths of the screen width, subtracting border width */
   padding-left: 2%; /* Add padding to the left */
+}
+
+.departures td:last-child {
+  padding-right: 2%; /* Add padding to the left */
+}
+
+.departures td:first-child,
+.departures td:last-child {
+  width: calc(40% - 2px); /* 2/5ths of the screen width, subtracting border width */
 }
 
 .center {
@@ -94,6 +102,10 @@
 
 .left {
   text-align: left;
+}
+
+.right {
+  text-align: right;
 }
 
 /* Responsive styles */

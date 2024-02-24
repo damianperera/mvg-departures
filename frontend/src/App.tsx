@@ -116,27 +116,28 @@ function App() {
   const calculateRemainingTime = (epochTime: number) => {
     const currentTime = new Date().getTime();
     const remainingMilliseconds = epochTime - currentTime;
-
+  
     if (remainingMilliseconds < 60000) {
       return (<strong className="blinking">now</strong>);
     }
-
+  
     const remainingMinutes = Math.floor(remainingMilliseconds / 60000);
     const hours = Math.floor(remainingMinutes / 60);
     const minutes = remainingMinutes % 60;
-
+  
     let remainingTimeString = '';
     if (hours > 0) {
-      remainingTimeString += `${hours} ${hours === 1 ? 'hr' : 'hrs'}`;
+      remainingTimeString += `${hours} <small>${hours === 1 ? 'hr' : 'hrs'}</small>`;
       if (minutes > 0) {
-        remainingTimeString += `${minutes} ${minutes === 1 ? 'min' : 'mins'}`;
+        remainingTimeString += ` ${minutes} <small>${minutes === 1 ? 'min' : 'mins'}</small>`;
       }
     } else {
-      remainingTimeString += `${minutes} ${minutes === 1 ? 'min' : 'mins'}`;
+      remainingTimeString += `${minutes} <small>${minutes === 1 ? 'min' : 'mins'}</small>`;
     }
-
-    return (<span>{remainingTimeString}</span>);
+  
+    return (<span dangerouslySetInnerHTML={{ __html: remainingTimeString }}></span>);
   };
+  
 
   function transformDepartures(departures: DepartureProps[]): TransformedDepartureProps[] {
     const transformedArray = departures.reduce((acc: TransformedDepartureProps[], departure: DepartureProps) => {
@@ -166,6 +167,11 @@ function App() {
       } else {
         return 0;
       }
+    });
+
+    // Sort destinations alphabetically
+    transformedArray.forEach(item => {
+      item.destinations.sort((a, b) => a.destination.localeCompare(b.destination));
     });
 
     return transformedArray.map(item => ({
@@ -203,7 +209,7 @@ function App() {
                                   </td>
                                 </React.Fragment>
                               )}
-                              <td className='left'>{calculateRemainingTime(departure.realtimeDepartureTime)}</td>
+                              <td className='right'>{calculateRemainingTime(departure.realtimeDepartureTime)}</td>
                             </tr>
                           ))}
                         </React.Fragment>
