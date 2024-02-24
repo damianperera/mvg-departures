@@ -60,7 +60,7 @@ type DepartureProps = {
 function App() {
   const DEFAULT_STATION = 'Forstenrieder Allee'
   const TYPE_STATION = 'STATION'
-  const [departureStations, setDepartureStation] = useState<DepartureStationProps>()
+  // const [departureStations, setDepartureStation] = useState<DepartureStationProps>()
   const [departures, setDepartures] = useState<DepartureProps [][][]>([])
     // const [disruptions, setDisruptions] = useState<DisruptionProps[]>([])
 
@@ -78,7 +78,7 @@ function App() {
       const departures: DepartureProps[] = await data.json();
       const sortedDepartures: DepartureProps[][][] = sortDepartures(departures)
 
-      setDepartureStation(pds)
+      // setDepartureStation(pds)
       setDepartures(sortedDepartures);
     }
 
