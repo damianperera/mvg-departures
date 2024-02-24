@@ -60,6 +60,7 @@ type DepartureProps = {
 function App() {
   const DEFAULT_STATION = 'Forstenrieder Allee'
   const TYPE_STATION = 'STATION'
+  const TYPE_UBAHN = 'UBAHN'
   // const [departureStations, setDepartureStation] = useState<DepartureStationProps>()
   const [departures, setDepartures] = useState<DepartureProps [][][]>([])
     // const [disruptions, setDisruptions] = useState<DisruptionProps[]>([])
@@ -76,7 +77,7 @@ function App() {
         method: "GET"
       });
       const departures: DepartureProps[] = await data.json();
-      const sortedDepartures: DepartureProps[][][] = sortDepartures(departures)
+      const sortedDepartures: DepartureProps[][][] = transformDepartures(departures)
 
       // setDepartureStation(pds)
       setDepartures(sortedDepartures);
@@ -126,7 +127,7 @@ function App() {
     return (<span>{remainingTimeString}</span>);
   };
 
-  const sortDepartures = (departures: DepartureProps[]): DepartureProps[][][] => {
+  const transformDepartures = (departures: DepartureProps[]): DepartureProps[][][] => {
     // Filter out cancelled departures
     const filteredDepartures = departures.filter(departure => !departure.cancelled);
   
@@ -142,8 +143,8 @@ function App() {
   
     // Sort groups based on the presence of UBAHN transportType
     const sortedGroups = Object.entries(groups).sort(([typeA], [typeB]) => {
-      if (typeA === 'UBAHN') return -1;
-      if (typeB === 'UBAHN') return 1;
+      if (typeA === TYPE_UBAHN) return -1;
+      if (typeB === TYPE_UBAHN) return 1;
       return 0;
     });
   
@@ -173,8 +174,11 @@ function App() {
       });
       departures.splice(0, departures.length, ...sortedNestedArray);
     });
+
+    const result = sortedGroups.map(([_, departures]) => [departures])
+    console.log(result)
   
-    return sortedGroups.map(([_, departures]) => [departures]);
+    return result;
   };
 
   return (
