@@ -87,13 +87,15 @@ function App() {
       setDisruptions(jsonData);
     };
     
-    const interval = setInterval(() => {
+    const runEveryMinute = () => {
       getDepartureStation();
       getDisruptions();
-    }, 60000); // 60000 milliseconds = 1 minute
 
-    // Clear the interval when the component is unmounted or when the dependency array changes
-    return () => clearInterval(interval);
+      setTimeout(runEveryMinute, 10000);
+    };
+
+    const timeoutId = setTimeout(runEveryMinute, 0)
+    return () => clearTimeout(timeoutId);
   }, []);
 
   const calculateRemainingTime = (epochTime: number) => {
