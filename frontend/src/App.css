@@ -75,18 +75,17 @@
 
 .departures td {
   border: 2px solid black; /* Thick border */
-  padding: 1%; /* Reduce padding */
+  padding: 3px; /* Reduce padding */
   white-space: nowrap; /* Prevent text wrapping */
   overflow: hidden; /* Hide overflowing content */
   text-overflow: ellipsis; /* Display ellipsis for truncated text */
+  font-size: calc(3vw + 10px); /* Set font size based on screen width */
 }
 
-.departures td:first-child {
-  width: calc(20% - 4px); /* 1/5th of the screen width, subtracting border width */
-}
-
-.departures td:nth-child(2) {
+.departures td:nth-child(2),
+.departures td:last-child {
   width: calc(40% - 4px); /* 2/5ths of the screen width, subtracting border width */
+  padding-left: 10px; /* Add padding to the left */
 }
 
 .center {
@@ -103,5 +102,3 @@
     max-width: 200px; /* Limit width of cells */
   }
 }
-
-
