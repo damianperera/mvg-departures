@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import './App.css';
 
 // type DisruptionStationProps = {
@@ -72,10 +73,12 @@ function App() {
   // const [departureStations, setDepartureStation] = useState<DepartureStationProps>()
   const [departures, setDepartures] = useState<TransformedDepartureProps[]>([])
   // const [disruptions, setDisruptions] = useState<DisruptionProps[]>([])
+  const [searchParams] = useSearchParams()
 
   useEffect(() => {
     const getDepartureStation = async () => {
-      let data = await fetch(`https://www.mvg.de/api/fib/v2/location?query=${encodeURI(DEFAULT_STATION)}`, {
+      const station = searchParams.get('station') || DEFAULT_STATION
+      let data = await fetch(`https://www.mvg.de/api/fib/v2/location?query=${encodeURI(station)}`, {
         method: "GET"
       });
       let jsonData = await data.json();
@@ -175,40 +178,40 @@ function App() {
   }
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <div className='departures-container'>
-          <table className='departures'>
-            <tbody>
-              {departures.map((item, index) => {
-                return (
-                  <React.Fragment key={index}>
-                    {item.destinations.map((dest, destIndex) => {
-                      return dest.departures.map((departure, depIndex) => {
-                        return (
-                          <tr key={`${index}-${destIndex}-${depIndex}`}>
-                            {depIndex === 0 && (
-                              <React.Fragment>
-                                <td rowSpan={dest.departures.length}>
-                                  {depIndex === 0 ? item.label : null}
-                                </td>
-                                <td className='left' rowSpan={dest.departures.length}>
-                                  {dest.destination}
-                                </td>
-                              </React.Fragment>
-                            )}
-                            <td className='left'>{calculateRemainingTime(departure.realtimeDepartureTime)}</td>
-                          </tr>
-                        );
-                      });
-                    })}
-                  </React.Fragment>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-        {/* {disruptions.map((disruption, idx) => {
+      <div className="App">
+        <header className="App-header">
+          <div className='departures-container'>
+            <table className='departures'>
+              <tbody>
+                {departures.map((item, index) => {
+                  return (
+                    <React.Fragment key={index}>
+                      {item.destinations.map((dest, destIndex) => {
+                        return dest.departures.map((departure, depIndex) => {
+                          return (
+                            <tr key={`${index}-${destIndex}-${depIndex}`}>
+                              {depIndex === 0 && (
+                                <React.Fragment>
+                                  <td rowSpan={dest.departures.length}>
+                                    {depIndex === 0 ? item.label : null}
+                                  </td>
+                                  <td className='left' rowSpan={dest.departures.length}>
+                                    {dest.destination}
+                                  </td>
+                                </React.Fragment>
+                              )}
+                              <td className='left'>{calculateRemainingTime(departure.realtimeDepartureTime)}</td>
+                            </tr>
+                          );
+                        });
+                      })}
+                    </React.Fragment>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+          {/* {disruptions.map((disruption, idx) => {
           return (
             <div key={idx}>
               <div><strong>{disruption.type}</strong></div>
@@ -217,8 +220,8 @@ function App() {
             </div>
           );
         })} */}
-      </header>
-    </div>
+        </header>
+      </div>
   );
 }
 
