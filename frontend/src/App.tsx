@@ -111,7 +111,7 @@ function App() {
 
     const timeoutId = setTimeout(runEveryMinute, 0)
     return () => clearTimeout(timeoutId);
-  }, []);
+  }, [searchParams]);
 
   const calculateRemainingTime = (epochTime: number) => {
     const currentTime = new Date().getTime();
@@ -178,23 +178,26 @@ function App() {
   }
 
   return (
-      <div className="App">
-        <header className="App-header">
-          <div className='departures-container'>
-            <table className='departures'>
-              <tbody>
-                {departures.map((item, index) => {
-                  return (
-                    <React.Fragment key={index}>
-                      {item.destinations.map((dest, destIndex) => {
-                        return dest.departures.map((departure, depIndex) => {
-                          return (
+    <div className="App">
+      <header className="App-header">
+        <div className='departures-container'>
+          <table className='departures'>
+            <tbody>
+              {departures.map((item, index) => {
+                return (
+                  <React.Fragment key={index}>
+                    {item.destinations.map((dest, destIndex) => {
+                      return (
+                        <React.Fragment key={`${index}-${destIndex}`}>
+                          {dest.departures.map((departure, depIndex) => (
                             <tr key={`${index}-${destIndex}-${depIndex}`}>
                               {depIndex === 0 && (
                                 <React.Fragment>
-                                  <td rowSpan={dest.departures.length}>
-                                    {depIndex === 0 ? item.label : null}
-                                  </td>
+                                  {destIndex === 0 && (
+                                    <td className='center' rowSpan={item.destinations.reduce((acc, dest) => acc + dest.departures.length, 0)}>
+                                      {item.label}
+                                    </td>
+                                  )}
                                   <td className='left' rowSpan={dest.departures.length}>
                                     {dest.destination}
                                   </td>
@@ -202,16 +205,17 @@ function App() {
                               )}
                               <td className='left'>{calculateRemainingTime(departure.realtimeDepartureTime)}</td>
                             </tr>
-                          );
-                        });
-                      })}
-                    </React.Fragment>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-          {/* {disruptions.map((disruption, idx) => {
+                          ))}
+                        </React.Fragment>
+                      );
+                    })}
+                  </React.Fragment>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+        {/* {disruptions.map((disruption, idx) => {
           return (
             <div key={idx}>
               <div><strong>{disruption.type}</strong></div>
@@ -220,8 +224,8 @@ function App() {
             </div>
           );
         })} */}
-        </header>
-      </div>
+      </header>
+    </div>
   );
 }
 

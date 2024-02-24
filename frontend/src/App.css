@@ -82,7 +82,7 @@
   font-size: calc(3vw + 10px); /* Set font size based on screen width */
 }
 
-.departures td:nth-child(2),
+.departures td:nth-last-child(2),
 .departures td:last-child {
   width: calc(40% - 4px); /* 2/5ths of the screen width, subtracting border width */
   padding-left: 2%; /* Add padding to the left */
