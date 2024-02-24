@@ -53,3 +53,55 @@
     opacity: 0; /* Invisible for the second second */
   }
 }
+
+.departures-container {
+  position: relative;
+  width: calc(100vw - 40px); /* Fill the horizontal space, subtracting 40px for left and right margin */
+  height: calc(100vh - 40px); /* Fill the vertical space, subtracting 40px for top and bottom margin */
+  margin: 20px; /* Adjust margin as needed */
+}
+
+.departures {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-collapse: collapse;
+  border: 2px solid black; /* Thick border */
+  margin: 0; /* Remove margin */
+  padding: 0; /* Remove padding */
+}
+
+.departures td {
+  border: 2px solid black; /* Thick border */
+  padding: 1%; /* Reduce padding */
+  white-space: nowrap; /* Prevent text wrapping */
+  overflow: hidden; /* Hide overflowing content */
+  text-overflow: ellipsis; /* Display ellipsis for truncated text */
+}
+
+.departures td:first-child {
+  width: calc(20% - 4px); /* 1/5th of the screen width, subtracting border width */
+}
+
+.departures td:nth-child(2) {
+  width: calc(40% - 4px); /* 2/5ths of the screen width, subtracting border width */
+}
+
+.center {
+  text-align: center;
+}
+
+.left {
+  text-align: left;
+}
+
+/* Responsive styles */
+@media screen and (max-width: 600px) {
+  .departures td {
+    max-width: 200px; /* Limit width of cells */
+  }
+}
+
+

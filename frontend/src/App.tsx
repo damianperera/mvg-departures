@@ -72,7 +72,7 @@ function App() {
       let jsonData = await data.json();
   
       const pds = jsonData.find((e: DepartureStationProps) => e.type === TYPE_STATION)
-      data = await fetch(`https://www.mvg.de/api/fib/v2/departure?globalId=${pds?.globalId}&limit=10&offsetInMinutes=0`, {
+      data = await fetch(`https://www.mvg.de/api/fib/v2/departure?globalId=${pds?.globalId}&limit=20&offsetInMinutes=0`, {
         method: "GET"
       });
       const departures: DepartureProps[] = await data.json();
@@ -127,9 +127,12 @@ function App() {
   };
 
   const sortDepartures = (departures: DepartureProps[]): DepartureProps[][][] => {
-    // Organize departures into groups based on transportType
+    // Filter out cancelled departures
+    const filteredDepartures = departures.filter(departure => !departure.cancelled);
+  
+    // Group filtered departures by transportType
     const groups: { [key: string]: DepartureProps[] } = {};
-    departures.forEach(departure => {
+    filteredDepartures.forEach(departure => {
       const { transportType } = departure;
       if (!(transportType in groups)) {
         groups[transportType] = [];
@@ -144,15 +147,31 @@ function App() {
       return 0;
     });
   
-    // Sort nested arrays within each group by label and objects by realtimeDepartureTime
+    // Sort nested arrays within each group by label
     sortedGroups.forEach(([_, departures]) => {
-      departures.sort((a, b) => {
-        if (a.label < b.label) return -1;
-        if (a.label > b.label) return 1;
-        return 0;
+      departures.sort((a, b) => a.label.localeCompare(b.label));
+  
+      // Group departures by destination and sort them by realtimeDepartureTime
+      const groupedByDestination: { [key: string]: DepartureProps[] } = {};
+      departures.forEach(departure => {
+        const { destination } = departure;
+        if (!(destination in groupedByDestination)) {
+          groupedByDestination[destination] = [];
+        }
+        groupedByDestination[destination].push(departure);
       });
   
-      departures.sort((a, b) => a.realtimeDepartureTime - b.realtimeDepartureTime);
+      // Keep only the top two nested objects per destination (preserving sort order)
+      Object.values(groupedByDestination).forEach(destinationGroup => {
+        destinationGroup.splice(2);
+      });
+  
+      // Flatten and update the nested array
+      const sortedNestedArray: DepartureProps[] = [];
+      Object.values(groupedByDestination).forEach(destinationGroup => {
+        sortedNestedArray.push(...destinationGroup);
+      });
+      departures.splice(0, departures.length, ...sortedNestedArray);
     });
   
     return sortedGroups.map(([_, departures]) => [departures]);
@@ -161,20 +180,17 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <div>
-          <h3>{departureStations?.name}</h3>
-        </div>
-        <div>
-          <table>
+        <div className='departures-container'>
+          <table className='departures'>
             <tbody>
               {departures.map((group) => (
                 group.map((nestedArray, nIdx) => (
                   <React.Fragment key={nIdx}>
                     {nestedArray.map((departure, dIdx) => (
                       <tr key={dIdx}>
-                        <td>{departure.label}</td>
-                        <td>{departure.destination}</td>
-                        <td>{calculateRemainingTime(departure.realtimeDepartureTime)}</td>
+                        <td className='center'>{departure.label}</td>
+                        <td className='left'>{departure.destination}</td>
+                        <td className='left'>{calculateRemainingTime(departure.realtimeDepartureTime)}</td>
                       </tr>
                     ))}
                   </React.Fragment>
