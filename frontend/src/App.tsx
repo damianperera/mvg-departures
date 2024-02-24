@@ -118,7 +118,7 @@ function App() {
     const remainingMilliseconds = epochTime - currentTime;
   
     if (remainingMilliseconds < 60000) {
-      return (<strong className="blinking">now</strong>);
+      return (<strong className="blinking">now &nbsp;</strong>);
     }
   
     const remainingMinutes = Math.floor(remainingMilliseconds / 60000);
@@ -127,18 +127,17 @@ function App() {
   
     let remainingTimeString = '';
     if (hours > 0) {
-      remainingTimeString += `${hours} <small>${hours === 1 ? 'hr' : 'hrs'}</small>`;
+      remainingTimeString += `${hours} <small>${hours === 1 ? 'hr ' : 'hrs'}</small>`;
       if (minutes > 0) {
-        remainingTimeString += ` ${minutes} <small>${minutes === 1 ? 'min' : 'mins'}</small>`;
+        remainingTimeString += ` ${minutes} <small>${minutes === 1 ? 'min &nbsp;' : 'mins'}</small>`;
       }
     } else {
-      remainingTimeString += `${minutes} <small>${minutes === 1 ? 'min' : 'mins'}</small>`;
+      remainingTimeString += `${minutes} <small>${minutes === 1 ? 'min &nbsp;' : 'mins'}</small>`;
     }
   
     return (<span dangerouslySetInnerHTML={{ __html: remainingTimeString }}></span>);
   };
   
-
   function transformDepartures(departures: DepartureProps[]): TransformedDepartureProps[] {
     const transformedArray = departures.reduce((acc: TransformedDepartureProps[], departure: DepartureProps) => {
       const { label, destination } = departure;
