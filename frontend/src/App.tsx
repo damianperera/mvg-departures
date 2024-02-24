@@ -59,8 +59,8 @@ type DepartureProps = {
 
 function App() {
   const [departureStations, setDepartureStation] = useState<DepartureStationProps>()
-  const [disruptions, setDisruptions] = useState<DisruptionProps[]>([])
   const [departures, setDepartures] = useState<DepartureProps []>([])
+    // const [disruptions, setDisruptions] = useState<DisruptionProps[]>([])
 
   useEffect(() => {
     const getDepartureStation = async() => {
@@ -89,7 +89,7 @@ function App() {
     
     const runEveryMinute = () => {
       getDepartureStation();
-      getDisruptions();
+      // getDisruptions();
 
       setTimeout(runEveryMinute, 10000);
     };
