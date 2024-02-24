@@ -93,7 +93,7 @@ function App() {
       getDepartureStation();
       // getDisruptions();
 
-      setTimeout(runEveryMinute, 10000);
+      setTimeout(runEveryMinute, 60000);
     };
 
     const timeoutId = setTimeout(runEveryMinute, 0)
@@ -105,7 +105,7 @@ function App() {
     const remainingMilliseconds = epochTime - currentTime;
 
     if (remainingMilliseconds < 60000) {
-      return (<strong>now</strong>);
+      return (<strong className="blinking">now</strong>);
     }
 
     const remainingMinutes = Math.floor(remainingMilliseconds / 60000);
@@ -114,12 +114,12 @@ function App() {
 
     let remainingTimeString = '';
     if (hours > 0) {
-      remainingTimeString += `in ${hours} ${hours === 1 ? 'hour' : 'hours'}`;
+      remainingTimeString += `in ${hours} ${hours === 1 ? 'hr' : 'hrs'}`;
       if (minutes > 0) {
-        remainingTimeString += `in ${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`;
+        remainingTimeString += `in ${minutes} ${minutes === 1 ? 'min' : 'mins'}`;
       }
     } else {
-      remainingTimeString += `in ${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`;
+      remainingTimeString += `in ${minutes} ${minutes === 1 ? 'min' : 'mins'}`;
     }
 
     return (<span>{remainingTimeString}</span>);

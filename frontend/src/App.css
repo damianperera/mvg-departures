@@ -36,3 +36,20 @@
     transform: rotate(360deg);
   }
 }
+
+.blinking {
+  color: lightgreen; /* Set text color to green */
+  animation: blink 2s infinite; /* Blinking animation */
+}
+
+@keyframes blink {
+  0% {
+    opacity: 1; /* Fully visible for the first second */
+  }
+  50% {
+    opacity: 1; /* Fully visible for the second half of the cycle */
+  }
+  100% {
+    opacity: 0; /* Invisible for the second second */
+  }
+}
