@@ -51,10 +51,18 @@ type DepartureProps = {
   sev: boolean;
   platform: number;
   platformChanged: boolean;
-  messages: [];
+  messages: any[];
   bannerHash: string;
   occupancy: string;
   stopPointGlobalId: string;
+}
+
+type TransformedDepartureProps = {
+  label: string;
+  destinations: {
+    destination: string;
+    departures: DepartureProps[];
+  }[];
 }
 
 function App() {
@@ -62,22 +70,22 @@ function App() {
   const TYPE_STATION = 'STATION'
   const TYPE_UBAHN = 'UBAHN'
   // const [departureStations, setDepartureStation] = useState<DepartureStationProps>()
-  const [departures, setDepartures] = useState<DepartureProps [][][]>([])
-    // const [disruptions, setDisruptions] = useState<DisruptionProps[]>([])
+  const [departures, setDepartures] = useState<TransformedDepartureProps[]>([])
+  // const [disruptions, setDisruptions] = useState<DisruptionProps[]>([])
 
   useEffect(() => {
-    const getDepartureStation = async() => {
+    const getDepartureStation = async () => {
       let data = await fetch(`https://www.mvg.de/api/fib/v2/location?query=${encodeURI(DEFAULT_STATION)}`, {
         method: "GET"
       });
       let jsonData = await data.json();
-  
+
       const pds = jsonData.find((e: DepartureStationProps) => e.type === TYPE_STATION)
       data = await fetch(`https://www.mvg.de/api/fib/v2/departure?globalId=${pds?.globalId}&limit=20&offsetInMinutes=0`, {
         method: "GET"
       });
       const departures: DepartureProps[] = await data.json();
-      const sortedDepartures: DepartureProps[][][] = transformDepartures(departures)
+      const sortedDepartures: TransformedDepartureProps[] = transformDepartures(departures)
 
       // setDepartureStation(pds)
       setDepartures(sortedDepartures);
@@ -90,7 +98,7 @@ function App() {
     //   const jsonData = await data.json();
     //   setDisruptions(jsonData);
     // };
-    
+
     const runEveryMinute = () => {
       getDepartureStation();
       // getDisruptions();
@@ -127,59 +135,44 @@ function App() {
     return (<span>{remainingTimeString}</span>);
   };
 
-  const transformDepartures = (departures: DepartureProps[]): DepartureProps[][][] => {
-    // Filter out cancelled departures
-    const filteredDepartures = departures.filter(departure => !departure.cancelled);
-  
-    // Group filtered departures by transportType
-    const groups: { [key: string]: DepartureProps[] } = {};
-    filteredDepartures.forEach(departure => {
-      const { transportType } = departure;
-      if (!(transportType in groups)) {
-        groups[transportType] = [];
-      }
-      groups[transportType].push(departure);
-    });
-  
-    // Sort groups based on the presence of UBAHN transportType
-    const sortedGroups = Object.entries(groups).sort(([typeA], [typeB]) => {
-      if (typeA === TYPE_UBAHN) return -1;
-      if (typeB === TYPE_UBAHN) return 1;
-      return 0;
-    });
-  
-    // Sort nested arrays within each group by label
-    sortedGroups.forEach(([_, departures]) => {
-      departures.sort((a, b) => a.label.localeCompare(b.label));
-  
-      // Group departures by destination and sort them by realtimeDepartureTime
-      const groupedByDestination: { [key: string]: DepartureProps[] } = {};
-      departures.forEach(departure => {
-        const { destination } = departure;
-        if (!(destination in groupedByDestination)) {
-          groupedByDestination[destination] = [];
+  function transformDepartures(departures: DepartureProps[]): TransformedDepartureProps[] {
+    const transformedArray = departures.reduce((acc: TransformedDepartureProps[], departure: DepartureProps) => {
+      const { label, destination } = departure;
+      const labelIndex = acc.findIndex(item => item.label === label);
+      if (labelIndex === -1) {
+        acc.push({ label, destinations: [{ destination, departures: [departure] }] });
+      } else {
+        const destIndex = acc[labelIndex].destinations.findIndex(item => item.destination === destination);
+        if (destIndex === -1) {
+          acc[labelIndex].destinations.push({ destination, departures: [departure] });
+        } else {
+          acc[labelIndex].destinations[destIndex].departures.push(departure);
         }
-        groupedByDestination[destination].push(departure);
-      });
-  
-      // Keep only the top two nested objects per destination (preserving sort order)
-      Object.values(groupedByDestination).forEach(destinationGroup => {
-        destinationGroup.splice(2);
-      });
-  
-      // Flatten and update the nested array
-      const sortedNestedArray: DepartureProps[] = [];
-      Object.values(groupedByDestination).forEach(destinationGroup => {
-        sortedNestedArray.push(...destinationGroup);
-      });
-      departures.splice(0, departures.length, ...sortedNestedArray);
+      }
+      return acc;
+    }, []);
+
+    // Sort the transformed array so that 'UBAHN' departures come first
+    transformedArray.sort((a, b) => {
+      const aHasUBahn = a.destinations.some(dest => dest.departures.some(dep => dep.transportType === TYPE_UBAHN));
+      const bHasUBahn = b.destinations.some(dest => dest.departures.some(dep => dep.transportType === TYPE_UBAHN));
+      if (aHasUBahn && !bHasUBahn) {
+        return -1;
+      } else if (!aHasUBahn && bHasUBahn) {
+        return 1;
+      } else {
+        return 0;
+      }
     });
 
-    const result = sortedGroups.map(([_, departures]) => [departures])
-    console.log(result)
-  
-    return result;
-  };
+    return transformedArray.map(item => ({
+      label: item.label,
+      destinations: item.destinations.map(dest => ({
+        destination: dest.destination,
+        departures: dest.departures.sort((a, b) => a.realtimeDepartureTime - b.realtimeDepartureTime).slice(0, 2)
+      }))
+    }));
+  }
 
   return (
     <div className="App">
@@ -187,20 +180,32 @@ function App() {
         <div className='departures-container'>
           <table className='departures'>
             <tbody>
-              {departures.map((group) => (
-                group.map((nestedArray, nIdx) => (
-                  <React.Fragment key={nIdx}>
-                    {nestedArray.map((departure, dIdx) => (
-                      <tr key={dIdx}>
-                        <td className='center'>{departure.label}</td>
-                        <td className='left'>{departure.destination}</td>
-                        <td className='left'>{calculateRemainingTime(departure.realtimeDepartureTime)}</td>
-                      </tr>
-                    ))}
+              {departures.map((item, index) => {
+                return (
+                  <React.Fragment key={index}>
+                    {item.destinations.map((dest, destIndex) => {
+                      return dest.departures.map((departure, depIndex) => {
+                        return (
+                          <tr key={`${index}-${destIndex}-${depIndex}`}>
+                            {depIndex === 0 && (
+                              <React.Fragment>
+                                <td rowSpan={dest.departures.length}>
+                                  {depIndex === 0 ? item.label : null}
+                                </td>
+                                <td className='left' rowSpan={dest.departures.length}>
+                                  {dest.destination}
+                                </td>
+                              </React.Fragment>
+                            )}
+                            <td className='left'>{calculateRemainingTime(departure.realtimeDepartureTime)}</td>
+                          </tr>
+                        );
+                      });
+                    })}
                   </React.Fragment>
-                ))
-            ))}
-      </tbody>
+                );
+              })}
+            </tbody>
           </table>
         </div>
         {/* {disruptions.map((disruption, idx) => {
