@@ -208,7 +208,15 @@ function App() {
                                   </td>
                                 </React.Fragment>
                               )}
-                              <td className='right'>{calculateRemainingTime(departure.realtimeDepartureTime)}</td>
+                              <td className='right'>
+                                {departure.sev && (
+                                  <td className='departureNested nestedBlack'>SEV</td>
+                                )}
+                                {departure.cancelled && (
+                                  <td className='departureNested nestedRed blinking'>&#10006;</td>
+                                )}
+                                {calculateRemainingTime(departure.realtimeDepartureTime)}
+                              </td>
                             </tr>
                           ))}
                         </React.Fragment>

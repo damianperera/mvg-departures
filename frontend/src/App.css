@@ -93,6 +93,7 @@
 
 .departures td:last-child {
   width: 5% !important; /* 2/5ths of the screen width, subtracting border width */
+  position: relative;
 }
 
 .center {
@@ -113,4 +114,35 @@
   .departures td {
     max-width: 200px; /* Limit width of cells */
   }
+}
+
+.departureNested {
+  max-width: 20% !important;
+  width: 20% !important;
+  min-width: 20% !important;
+  text-align: center;
+  font-size: calc(2vw + 10px) !important;
+  position: absolute;
+  margin-left: 4%;
+  border: none !important;
+  margin-top: 1%;
+}
+
+.nestedBlack {
+  background-color: black;
+  color: white;
+}
+
+.nestedRed {
+  background-color: red;
+  color: white;
+  max-width: 10% !important;
+  width: 10% !important;
+  min-width: 10% !important;
+  border-radius: 50%;
+  text-align: center; /* Center horizontally */
+  line-height: inherit; /* Center vertically */
+  padding-right: 2% !important;
+  padding-top: 1% !important;
+  padding-bottom: 1% !important;
 }
