@@ -70,7 +70,7 @@ function App() {
   const DEFAULT_STATION = 'Forstenrieder Allee'
   const TYPE_STATION = 'STATION'
   const TYPE_UBAHN = 'UBAHN'
-  // const [departureStations, setDepartureStation] = useState<DepartureStationProps>()
+  const [departureStation, setDepartureStation] = useState<DepartureStationProps>()
   const [departures, setDepartures] = useState<TransformedDepartureProps[]>([])
   // const [disruptions, setDisruptions] = useState<DisruptionProps[]>([])
   const [searchParams] = useSearchParams()
@@ -90,7 +90,7 @@ function App() {
       const departures: DepartureProps[] = await data.json();
       const sortedDepartures: TransformedDepartureProps[] = transformDepartures(departures)
 
-      // setDepartureStation(pds)
+      setDepartureStation(pds)
       setDepartures(sortedDepartures);
     }
 
@@ -102,23 +102,30 @@ function App() {
     //   setDisruptions(jsonData);
     // };
 
-    const runEveryMinute = () => {
-      getDepartureStation();
-      // getDisruptions();
-
-      setTimeout(runEveryMinute, 60000);
-    };
-
-    const timeoutId = setTimeout(runEveryMinute, 0)
-    return () => clearTimeout(timeoutId);
+    getDepartureStation()
   }, [searchParams]);
+
+  useEffect(() => {
+    const getDepartures = async () => {
+      const data = await fetch(`https://www.mvg.de/api/fib/v2/departure?globalId=${departureStation?.globalId}&limit=20&offsetInMinutes=0`, {
+        method: "GET"
+      });
+      const departures: DepartureProps[] = await data.json();
+      const sortedDepartures: TransformedDepartureProps[] = transformDepartures(departures)
+      setDepartures(sortedDepartures)
+    }
+
+    const runEveryMinute = setInterval(getDepartures, 60000)
+
+    return () => clearInterval(runEveryMinute);
+  })
 
   const calculateRemainingTime = (epochTime: number) => {
     const currentTime = new Date().getTime();
     const remainingMilliseconds = epochTime - currentTime;
   
     if (remainingMilliseconds < 60000) {
-      return (<strong className="blinking">now &nbsp;</strong>);
+      return (<strong className="blinking">now</strong>);
     }
   
     const remainingMinutes = Math.floor(remainingMilliseconds / 60000);

@@ -83,16 +83,17 @@
 }
 
 .departures td:first-child {
-  width: 5% !important;
+  max-width: 1vw !important;
 }
 
 .departures td:nth-last-child(2) {
   font-size: calc(3vw + 10px);
   padding-left: 2%; /* Add padding to the left */
+  max-width: 10vw !important;
 }
 
 .departures td:last-child {
-  width: 5% !important; /* 2/5ths of the screen width, subtracting border width */
+  max-width: 4vw !important; /* 2/5ths of the screen width, subtracting border width */
   position: relative;
 }
 
@@ -131,6 +132,7 @@
 .nestedBlack {
   background-color: black;
   color: white;
+  padding-right: 2% !important;
 }
 
 .nestedRed {
@@ -142,7 +144,8 @@
   border-radius: 50%;
   text-align: center; /* Center horizontally */
   line-height: inherit; /* Center vertically */
-  padding-right: 2% !important;
+  padding-left: 3% !important;
+  padding-right: 3% !important;
   padding-top: 1% !important;
   padding-bottom: 1% !important;
 }
