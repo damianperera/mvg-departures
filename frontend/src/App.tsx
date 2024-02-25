@@ -134,7 +134,7 @@ function App() {
   
     let remainingTimeString = '';
     if (hours > 0) {
-      remainingTimeString += `${hours} <small>${hours === 1 ? 'hr ' : 'hrs'}</small>`;
+      remainingTimeString += `${hours} <small>${hours === 1 ? 'hr' : 'hrs'}</small>`;
       if (minutes > 0) {
         remainingTimeString += ` ${minutes} <small>${minutes === 1 ? 'min &nbsp;' : 'mins'}</small>`;
       }
