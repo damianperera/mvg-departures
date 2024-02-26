@@ -74,7 +74,7 @@
 }
 
 .departures td {
-  border: 2px solid black; /* Thick border */
+  border: 2px solid darkgray; /* Thick border */
   padding: 3px; /* Reduce padding */
   white-space: nowrap; /* Prevent text wrapping */
   overflow: hidden; /* Hide overflowing content */
@@ -126,6 +126,7 @@
   position: absolute;
   margin-left: 1%;
   border: none !important;
+  padding-top: 1%;
   padding-left: 3% !important;
   padding-right: 3% !important;
   padding-bottom: 1% !important;
@@ -143,7 +144,7 @@
   background-color: red !important;
   color: white;
   font-weight: bold;
-  margin-top: 1%;
+  margin-top: calc(1% - 1px);
   z-index: 999;
 }
 
@@ -151,5 +152,5 @@
   background-color: darkorange;
   color: white;
   font-weight: bold;
-  margin-top: 1%;
+  margin-top: calc(1% - 1px);
 }

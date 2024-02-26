@@ -125,15 +125,15 @@ function App() {
   const calculateRemainingTime = (epochTime: number) => {
     const currentTime = new Date().getTime();
     const remainingMilliseconds = epochTime - currentTime;
-  
+
     if (remainingMilliseconds < 60000) {
       return (<strong className="blinking">now</strong>);
     }
-  
+
     const remainingMinutes = Math.floor(remainingMilliseconds / 60000);
     const hours = Math.floor(remainingMinutes / 60);
     const minutes = remainingMinutes % 60;
-  
+
     let remainingTimeString = '';
     if (hours > 0) {
       remainingTimeString += `${hours} <small>${hours === 1 ? 'hr' : 'hrs'}</small>`;
@@ -143,10 +143,10 @@ function App() {
     } else {
       remainingTimeString += `${minutes} <small>${minutes === 1 ? 'min &nbsp;' : 'mins'}</small>`;
     }
-  
+
     return (<span dangerouslySetInnerHTML={{ __html: remainingTimeString }}></span>);
   };
-  
+
   function transformDepartures(departures: DepartureProps[]): TransformedDepartureProps[] {
     const transformedArray = departures.reduce((acc: TransformedDepartureProps[], departure: DepartureProps) => {
       const { label, destination } = departure;
@@ -219,13 +219,13 @@ function App() {
                               )}
                               <td key={`departure-${index}-${destIndex}-${depIndex}`} className='right'>
                                 {departure.sev && (
-                                  <td key={`sev-${index}-${destIndex}-${depIndex}`} className='departureNested departureSev'>SEV</td>
+                                  <div key={`sev-${index}-${destIndex}-${depIndex}`} className='departureNested departureSev'>SEV</div>
                                 )}
                                 {departure.cancelled && (
-                                  <td key={`cancelled-${index}-${destIndex}-${depIndex}`} className='departureNested departureCancelled blinking'>CANCEL</td>
+                                  <div key={`cancelled-${index}-${destIndex}-${depIndex}`} className='departureNested departureCancelled blinking'>CANCEL</div>
                                 )}
                                 {(departure.delayInMinutes > 0 && !departure.cancelled) && (
-                                  <td key={`delayed-${index}-${destIndex}-${depIndex}`} className='departureNested departureDelayed'>DELAYED</td>
+                                  <div key={`delayed-${index}-${destIndex}-${depIndex}`} className='departureNested departureDelayed'>DELAY</div>
                                 )}
                                 {calculateRemainingTime(departure.realtimeDepartureTime)}
                               </td>
