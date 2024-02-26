@@ -217,10 +217,13 @@ function App() {
                               )}
                               <td className='right'>
                                 {departure.sev && (
-                                  <td className='departureNested nestedBlack'>SEV</td>
+                                  <td className='departureNested departureSev'>SEV</td>
                                 )}
                                 {departure.cancelled && (
-                                  <td className='departureNested nestedRed blinking'>&#10006;</td>
+                                  <td className='departureNested departureCancelled blinking'>CANCEL</td>
+                                )}
+                                {(departure.delayInMinutes > 0 && !departure.cancelled) && (
+                                  <td className='departureNested departureDelayed'>DELAYED</td>
                                 )}
                                 {calculateRemainingTime(departure.realtimeDepartureTime)}
                               </td>

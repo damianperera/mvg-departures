@@ -121,31 +121,35 @@
   max-width: 20% !important;
   width: 20% !important;
   min-width: 20% !important;
-  text-align: center;
-  font-size: calc(2vw + 10px) !important;
+  text-align: center ;
+  font-size: calc(1vw + 3px) !important;
   position: absolute;
-  margin-left: 4%;
+  margin-left: 1%;
   border: none !important;
-  margin-top: 1%;
-}
-
-.nestedBlack {
-  background-color: black;
-  color: white;
-  padding-right: 2% !important;
-}
-
-.nestedRed {
-  background-color: red;
-  color: white;
-  max-width: 10% !important;
-  width: 10% !important;
-  min-width: 10% !important;
-  border-radius: 50%;
-  text-align: center; /* Center horizontally */
-  line-height: inherit; /* Center vertically */
   padding-left: 3% !important;
   padding-right: 3% !important;
-  padding-top: 1% !important;
   padding-bottom: 1% !important;
+  line-height: inherit;
+}
+
+.departureSev {
+  background-color: purple !important;
+  color: white !important;
+  margin-top: calc(7% + 3px);
+  font-weight: bold;
+}
+
+.departureCancelled {
+  background-color: red !important;
+  color: white;
+  font-weight: bold;
+  margin-top: 1%;
+  z-index: 999;
+}
+
+.departureDelayed {
+  background-color: darkorange;
+  color: white;
+  font-weight: bold;
+  margin-top: 1%;
 }
