@@ -72,6 +72,7 @@ function App() {
   const TYPE_UBAHN = 'UBAHN'
   const [departureStation, setDepartureStation] = useState<DepartureStationProps>()
   const [departures, setDepartures] = useState<TransformedDepartureProps[]>([])
+  const [isLoading, setIsLoading] = useState(true)
   // const [disruptions, setDisruptions] = useState<DisruptionProps[]>([])
   const [searchParams] = useSearchParams()
 
@@ -95,6 +96,7 @@ function App() {
     //   setDisruptions(jsonData);
     // };
 
+    setIsLoading(true)
     getDepartureStation()
   }, [searchParams]);
 
@@ -107,6 +109,7 @@ function App() {
       const departures: DepartureProps[] = await data.json();
       const sortedDepartures: TransformedDepartureProps[] = transformDepartures(departures)
       setDepartures(sortedDepartures)
+      setIsLoading(false)
     }
 
     const runEveryMinute = setInterval(getDepartures, 60000)
@@ -187,6 +190,9 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
+        {isLoading && (
+          <div className='loading'>Loading Departures</div>
+        )}
         <div className='departures-container'>
           <table className='departures'>
             <tbody>
