@@ -83,7 +83,7 @@
 }
 
 .departures td:first-child {
-  max-width: 1vw !important;
+  max-width: 2vw !important;
 }
 
 .departures td:nth-last-child(2) {
@@ -93,7 +93,7 @@
 }
 
 .departures td:last-child {
-  max-width: 4.75vw !important; /* 2/5ths of the screen width, subtracting border width */
+  max-width: 5vw !important; /* 2/5ths of the screen width, subtracting border width */
   position: relative;
 }
 
