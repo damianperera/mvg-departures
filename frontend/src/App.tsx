@@ -75,22 +75,23 @@ function App() {
   // const [disruptions, setDisruptions] = useState<DisruptionProps[]>([])
   const [searchParams] = useSearchParams()
 
+  // initial run
   useEffect(() => {
     const getDepartureStation = async () => {
       const station = searchParams.get('station') || DEFAULT_STATION
       let data = await fetch(`https://www.mvg.de/api/fib/v2/location?query=${encodeURI(station)}`, {
         method: "GET"
       });
-      let jsonData = await data.json();
+      const stations = await data.json();
 
-      const pds = jsonData.find((e: DepartureStationProps) => e.type === TYPE_STATION)
-      data = await fetch(`https://www.mvg.de/api/fib/v2/departure?globalId=${pds?.globalId}&limit=20&offsetInMinutes=0`, {
+      const targetStation = stations.find((e: DepartureStationProps) => e.type === TYPE_STATION)
+      data = await fetch(`https://www.mvg.de/api/fib/v2/departure?globalId=${targetStation?.globalId}&limit=20&offsetInMinutes=0`, {
         method: "GET"
       });
       const departures: DepartureProps[] = await data.json();
       const sortedDepartures: TransformedDepartureProps[] = transformDepartures(departures)
 
-      setDepartureStation(pds)
+      setDepartureStation(targetStation)
       setDepartures(sortedDepartures);
     }
 
@@ -105,6 +106,7 @@ function App() {
     getDepartureStation()
   }, [searchParams]);
 
+  // scheduled departure update
   useEffect(() => {
     const getDepartures = async () => {
       const data = await fetch(`https://www.mvg.de/api/fib/v2/departure?globalId=${departureStation?.globalId}&limit=20&offsetInMinutes=0`, {
@@ -206,24 +208,24 @@ function App() {
                               {depIndex === 0 && (
                                 <React.Fragment>
                                   {destIndex === 0 && (
-                                    <td className='center' rowSpan={item.destinations.reduce((acc, dest) => acc + dest.departures.length, 0)}>
+                                    <td key={`transport-label-${index}-${destIndex}-${depIndex}`} className='center' rowSpan={item.destinations.reduce((acc, dest) => acc + dest.departures.length, 0)}>
                                       {item.label}
                                     </td>
                                   )}
-                                  <td className='left' rowSpan={dest.departures.length}>
+                                  <td key={`destination-${index}-${destIndex}-${depIndex}`} className='left' rowSpan={dest.departures.length}>
                                     {dest.destination}
                                   </td>
                                 </React.Fragment>
                               )}
-                              <td className='right'>
+                              <td key={`departure-${index}-${destIndex}-${depIndex}`} className='right'>
                                 {departure.sev && (
-                                  <td className='departureNested departureSev'>SEV</td>
+                                  <td key={`sev-${index}-${destIndex}-${depIndex}`} className='departureNested departureSev'>SEV</td>
                                 )}
                                 {departure.cancelled && (
-                                  <td className='departureNested departureCancelled blinking'>CANCEL</td>
+                                  <td key={`cancelled-${index}-${destIndex}-${depIndex}`} className='departureNested departureCancelled blinking'>CANCEL</td>
                                 )}
                                 {(departure.delayInMinutes > 0 && !departure.cancelled) && (
-                                  <td className='departureNested departureDelayed'>DELAYED</td>
+                                  <td key={`delayed-${index}-${destIndex}-${depIndex}`} className='departureNested departureDelayed'>DELAYED</td>
                                 )}
                                 {calculateRemainingTime(departure.realtimeDepartureTime)}
                               </td>
