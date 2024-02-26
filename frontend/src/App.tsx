@@ -75,7 +75,7 @@ function App() {
   // const [disruptions, setDisruptions] = useState<DisruptionProps[]>([])
   const [searchParams] = useSearchParams()
 
-  // initial run
+  // load departure station
   useEffect(() => {
     const getDepartureStation = async () => {
       const station = searchParams.get('station') || DEFAULT_STATION
@@ -83,16 +83,8 @@ function App() {
         method: "GET"
       });
       const stations = await data.json();
-
       const targetStation = stations.find((e: DepartureStationProps) => e.type === TYPE_STATION)
-      data = await fetch(`https://www.mvg.de/api/fib/v2/departure?globalId=${targetStation?.globalId}&limit=20&offsetInMinutes=0`, {
-        method: "GET"
-      });
-      const departures: DepartureProps[] = await data.json();
-      const sortedDepartures: TransformedDepartureProps[] = transformDepartures(departures)
-
       setDepartureStation(targetStation)
-      setDepartures(sortedDepartures);
     }
 
     // const getDisruptions = async () => {
@@ -106,7 +98,7 @@ function App() {
     getDepartureStation()
   }, [searchParams]);
 
-  // scheduled departure update
+  // initial + scheduled departure update
   useEffect(() => {
     const getDepartures = async () => {
       const data = await fetch(`https://www.mvg.de/api/fib/v2/departure?globalId=${departureStation?.globalId}&limit=20&offsetInMinutes=0`, {
@@ -119,8 +111,9 @@ function App() {
 
     const runEveryMinute = setInterval(getDepartures, 60000)
 
+    departureStation != null && getDepartures()
     return () => clearInterval(runEveryMinute);
-  })
+  }, [departureStation])
 
   const calculateRemainingTime = (epochTime: number) => {
     const currentTime = new Date().getTime();
