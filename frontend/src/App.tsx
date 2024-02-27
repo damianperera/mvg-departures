@@ -222,10 +222,10 @@ function App() {
                                   <div key={`sev-${index}-${destIndex}-${depIndex}`} className='departureNested departureSev'>SEV</div>
                                 )}
                                 {departure.cancelled && (
-                                  <div key={`cancelled-${index}-${destIndex}-${depIndex}`} className='departureNested departureCancelled blinking'>CANCEL</div>
+                                  <div key={`cancelled-${index}-${destIndex}-${depIndex}`} className='departureNested departureCancelled blinking'>CANCELLED</div>
                                 )}
                                 {(departure.delayInMinutes > 0 && !departure.cancelled) && (
-                                  <div key={`delayed-${index}-${destIndex}-${depIndex}`} className='departureNested departureDelayed'>DELAY</div>
+                                  <div key={`delayed-${index}-${destIndex}-${depIndex}`} className='departureNested departureDelayed'>DELAYED</div>
                                 )}
                                 {calculateRemainingTime(departure.realtimeDepartureTime)}
                               </td>

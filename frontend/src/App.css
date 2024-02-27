@@ -93,7 +93,7 @@
 }
 
 .departures td:last-child {
-  max-width: 5vw !important; /* 2/5ths of the screen width, subtracting border width */
+  max-width: 6vw !important; /* 2/5ths of the screen width, subtracting border width */
   position: relative;
 }
 
@@ -118,13 +118,13 @@
 }
 
 .departureNested {
-  max-width: 20% !important;
-  width: 20% !important;
-  min-width: 20% !important;
+  max-width: 25% !important;
+  width: 25% !important;
+  min-width: 25% !important;
   text-align: center ;
   font-size: calc(1vw + 3px) !important;
   position: absolute;
-  margin-left: 1%;
+  margin-left: 0.5%;
   border: none !important;
   padding-top: 1%;
   padding-left: 3% !important;
@@ -136,7 +136,7 @@
 .departureSev {
   background-color: purple !important;
   color: white !important;
-  margin-top: calc(7% + 3px);
+  margin-top: 7%;
   font-weight: bold;
 }
 
@@ -144,7 +144,7 @@
   background-color: red !important;
   color: white;
   font-weight: bold;
-  margin-top: calc(1% - 1px);
+  margin-top: calc(1.5% - 4px);
   z-index: 999;
 }
 
@@ -152,7 +152,7 @@
   background-color: darkorange;
   color: white;
   font-weight: bold;
-  margin-top: calc(1% - 1px);
+  margin-top: calc(1.5% - 4px);
 }
 
 .loading-container {
