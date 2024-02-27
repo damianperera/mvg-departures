@@ -112,10 +112,8 @@ function App() {
       setIsLoading(false)
     }
 
-    const runEveryMinute = setInterval(getDepartures, 60000)
-
     departureStation != null && getDepartures()
-    return () => clearInterval(runEveryMinute);
+    return () => clearInterval(setInterval(getDepartures, 60000));
   }, [departureStation])
 
   const calculateRemainingTime = (epochTime: number) => {
@@ -191,7 +189,10 @@ function App() {
     <div className="App">
       <header className="App-header">
         {isLoading && (
-          <div className='loading'>Loading Departures</div>
+          <div className="loading-container">
+            <div className="loading-spinner"></div>
+            <p className="loading-text">Loading Departures</p>
+        </div>
         )}
         <div className='departures-container'>
           <table className='departures'>
