@@ -70,6 +70,9 @@ function App() {
   const DEFAULT_STATION = 'Forstenrieder Allee'
   const TYPE_STATION = 'STATION'
   const TYPE_UBAHN = 'UBAHN'
+  const TEXT_SEV = 'SEV'
+  const TEXT_CANCELLED = 'CANCELLED'
+  const TEXT_DELAYED = 'DELAYED'
   const [departureStation, setDepartureStation] = useState<DepartureStationProps>()
   const [departures, setDepartures] = useState<TransformedDepartureProps[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -219,13 +222,13 @@ function App() {
                               )}
                               <td key={`departure-${index}-${destIndex}-${depIndex}`} className='right'>
                                 {departure.sev && (
-                                  <div key={`sev-${index}-${destIndex}-${depIndex}`} className='departureNested departureSev'>SEV</div>
+                                  <div key={`sev-${index}-${destIndex}-${depIndex}`} className='departureNested departureSev'>{TEXT_SEV}</div>
                                 )}
                                 {departure.cancelled && (
-                                  <div key={`cancelled-${index}-${destIndex}-${depIndex}`} className='departureNested departureCancelled blinking'>CANCELLED</div>
+                                  <div key={`cancelled-${index}-${destIndex}-${depIndex}`} className='departureNested departureCancelled blinking'>{TEXT_CANCELLED}</div>
                                 )}
                                 {(departure.delayInMinutes > 0 && !departure.cancelled) && (
-                                  <div key={`delayed-${index}-${destIndex}-${depIndex}`} className='departureNested departureDelayed'>DELAYED</div>
+                                  <div key={`delayed-${index}-${destIndex}-${depIndex}`} className='departureNested departureDelayed'>{TEXT_DELAYED}</div>
                                 )}
                                 {calculateRemainingTime(departure.realtimeDepartureTime)}
                               </td>
