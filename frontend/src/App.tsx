@@ -2,27 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import './App.css';
 
-// type DisruptionStationProps = {
-//   id: string;
-//   name: string;
-// }
-
-// type DisruptionLineProps = {
-//   id: string;
-//   name: string;
-//   typeOfTransport: string;
-//   stations: DisruptionStationProps[];
-//   direction: string;
-// }
-
-// type DisruptionProps = {
-//   id: string;
-//   type: string;
-//   title: string;
-//   text: string;
-//   lines: DisruptionLineProps[];
-// }
-
 type DepartureStationProps = {
   type: string;
   latitude: string;
@@ -76,7 +55,6 @@ function App() {
   const [departureStation, setDepartureStation] = useState<DepartureStationProps>()
   const [departures, setDepartures] = useState<TransformedDepartureProps[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  // const [disruptions, setDisruptions] = useState<DisruptionProps[]>([])
   const [searchParams] = useSearchParams()
 
   // load departure station
@@ -90,14 +68,6 @@ function App() {
       const targetStation = stations.find((e: DepartureStationProps) => e.type === TYPE_STATION)
       setDepartureStation(targetStation)
     }
-
-    // const getDisruptions = async () => {
-    //   const data = await fetch("https://www.mvg.de/api/ems/tickers", {
-    //     method: "GET"
-    //   });
-    //   const jsonData = await data.json();
-    //   setDisruptions(jsonData);
-    // };
 
     setIsLoading(true)
     getDepartureStation()
@@ -243,15 +213,6 @@ function App() {
             </tbody>
           </table>
         </div>
-        {/* {disruptions.map((disruption, idx) => {
-          return (
-            <div key={idx}>
-              <div><strong>{disruption.type}</strong></div>
-              <div>{disruption.title}</div>
-              <div>{disruption.text}</div>
-            </div>
-          );
-        })} */}
       </header>
     </div>
   );
