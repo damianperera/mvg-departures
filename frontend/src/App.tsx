@@ -45,6 +45,11 @@ type TransformedDepartureProps = {
   }[];
 }
 
+type ErrorMessageProps = {
+  reason: string;
+  message: string
+}
+
 function App() {
   const DEFAULT_STATION = 'Forstenrieder Allee'
   const TYPE_STATION = 'STATION'
@@ -52,13 +57,24 @@ function App() {
   const TEXT_SEV = 'SEV'
   const TEXT_CANCELLED = 'CANCELLED'
   const TEXT_DELAYED = 'DELAYED'
-  const ERROR_NO_DEPARTURE_STATION_DATA = "could not fetch data for departure station"
-  const ERROR_NO_TARGET_STATION_IN_RESULTS = "could not find a departure station in your location"
-  const ERROR_NO_DEPARTURE_DATA = "could not fetch departures for station "
+  const ERRORS: { [key: string]: ErrorMessageProps } = {
+    NO_DEPARTURE_STATION_DATA: {
+      reason: "could not fetch data for departure station",
+      message: "Please verify that you are connected to the internet and try again"
+    },
+    NO_TARGET_STATION_IN_RESULTS: {
+      reason: "could not find a departure station in your location",
+      message: "Please verify that your station is correct and try again"
+    },
+    NO_DEPARTURE_DATA: {
+      reason: "could not fetch departures for provided station",
+      message: "Please verify that you are connected to the internet and try again"
+    }
+  }
   const [departureStation, setDepartureStation] = useState<DepartureStationProps>()
   const [departures, setDepartures] = useState<TransformedDepartureProps[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState("")
+  const [error, setError] = useState<ErrorMessageProps>()
   const [searchParams] = useSearchParams()
 
   // load departure station
@@ -70,8 +86,8 @@ function App() {
       });
 
       if (!data.ok) {
-        setError(ERROR_NO_DEPARTURE_STATION_DATA)
-        console.error(ERROR_NO_DEPARTURE_STATION_DATA)
+        setError(ERRORS.NO_DEPARTURE_STATION_DATA)
+        console.error(ERRORS.NO_DEPARTURE_STATION_DATA)
         return
       }
 
@@ -79,8 +95,8 @@ function App() {
       const targetStation = stations.find((e: DepartureStationProps) => e.type === TYPE_STATION)
 
       if (targetStation == null) {
-        setError(ERROR_NO_TARGET_STATION_IN_RESULTS)
-        console.error(ERROR_NO_TARGET_STATION_IN_RESULTS)
+        setError(ERRORS.NO_TARGET_STATION_IN_RESULTS)
+        console.error(ERRORS.NO_TARGET_STATION_IN_RESULTS)
         return
       }
 
@@ -89,6 +105,8 @@ function App() {
 
     setIsLoading(true)
     getDepartureStation()
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
   // initial + scheduled departure update
@@ -99,8 +117,8 @@ function App() {
       });
 
       if (!data.ok) {
-        setError(ERROR_NO_DEPARTURE_DATA + departureStation?.name)
-        console.error(ERROR_NO_DEPARTURE_DATA + departureStation?.name)
+        setError(ERRORS.NO_DEPARTURE_DATA)
+        console.error(ERRORS.NO_DEPARTURE_DATA)
         return
       }
 
@@ -113,6 +131,8 @@ function App() {
 
     departureStation != null && getDepartures()
     return () => clearInterval(setInterval(getDepartures, 60000));
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [departureStation])
 
   const calculateRemainingTime = (epochTime: number) => {
@@ -187,17 +207,17 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        {isLoading && error === "" && (
+        {isLoading && !error && (
           <div className="loading-container">
             <div className="loading-spinner"></div>
             <p className="loading-text">Loading Departures</p>
           </div>
         )}
-        {error !== "" && (
+        {error && (
           <div className="error-container">
             <p className="error-text">
-              <span className='red'>error &#187;</span> {error}<br />
-              <small>Please verify that you are connected to the internet and the departure station is correct</small>
+              <span className='red'>error &#187;</span> {error.reason}<br />
+              <small>{error.message}</small>
             </p>
           </div>
         )}
