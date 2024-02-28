@@ -1,52 +1,52 @@
-import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import './App.css';
+import React, { useState, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
+import './App.css'
 
 type DepartureStationProps = {
-  type: string;
-  latitude: string;
-  longitude: string;
-  place: string;
-  name: string;
-  globalId: string;
-  divaId: string;
-  transportTypes: [];
-  surroundingPlanLink: string;
-  aliases: string;
-  tariffZones: string;
+  type: string
+  latitude: string
+  longitude: string
+  place: string
+  name: string
+  globalId: string
+  divaId: string
+  transportTypes: []
+  surroundingPlanLink: string
+  aliases: string
+  tariffZones: string
 }
 
 type DepartureProps = {
-  plannedDepartureTime: string;
-  realtime: boolean;
-  delayInMinutes: number;
-  realtimeDepartureTime: number;
-  transportType: string;
-  label: string;
-  divaId: string;
-  network: string;
-  trainType: string;
-  destination: string;
-  cancelled: boolean;
-  sev: boolean;
-  platform: number;
-  platformChanged: boolean;
-  messages: any[];
-  bannerHash: string;
-  occupancy: string;
-  stopPointGlobalId: string;
+  plannedDepartureTime: string
+  realtime: boolean
+  delayInMinutes: number
+  realtimeDepartureTime: number
+  transportType: string
+  label: string
+  divaId: string
+  network: string
+  trainType: string
+  destination: string
+  cancelled: boolean
+  sev: boolean
+  platform: number
+  platformChanged: boolean
+  messages: any[]
+  bannerHash: string
+  occupancy: string
+  stopPointGlobalId: string
 }
 
 type TransformedDepartureProps = {
-  label: string;
+  label: string
   destinations: {
-    destination: string;
-    departures: DepartureProps[];
-  }[];
+    destination: string
+    departures: DepartureProps[]
+  }[]
 }
 
 type ErrorMessageProps = {
-  reason: string;
+  reason: string
   message: string
 }
 
@@ -54,7 +54,7 @@ function App() {
   /**
    * Constants
    */
-  const DEFAULT_STATION = 'Forstenrieder Allee'
+  const DEFAULT_STATION = 'Westpark'
   const TYPE_STATION = 'STATION'
   const TYPE_UBAHN = 'UBAHN'
   const TEXT_SEV = 'SEV'
@@ -74,6 +74,10 @@ function App() {
     NO_DEPARTURE_DATA: {
       reason: "could not fetch departures for provided station",
       message: "Please verify that you are connected to the internet and try again"
+    },
+    GENERIC_NETWORK_ERROR: {
+      reason: "could not communicate with upstream servers",
+      message: "Please verify that you are connected to the internet or wait awhile and try again"
     }
   }
 
@@ -91,61 +95,73 @@ function App() {
    */
   useEffect(() => {
     const getDepartureStation = async () => {
-      const station = searchParams.get('station') || DEFAULT_STATION
-      let data = await fetch(`${MVG_API_BASE_URI}/location?query=${encodeURI(station)}`, {
-        method: "GET"
-      });
+      try {
+        const station = searchParams.get('station') || DEFAULT_STATION
+        const data = await fetch(`${MVG_API_BASE_URI}/location?query=${encodeURI(station)}`, {
+          method: "GET"
+        })
 
-      if (!data.ok) {
-        setError(ERRORS.NO_DEPARTURE_STATION_DATA)
-        console.error(ERRORS.NO_DEPARTURE_STATION_DATA)
+        if (!data.ok) {
+          console.error(ERRORS.NO_DEPARTURE_STATION_DATA)
+          setError(ERRORS.NO_DEPARTURE_STATION_DATA)
+          return
+        }
+
+        const stations = await data.json()
+        const targetStation = stations.find((e: DepartureStationProps) => e.type === TYPE_STATION)
+
+        if (targetStation == null) {
+          console.error(ERRORS.NO_TARGET_STATION_IN_RESULTS)
+          setError(ERRORS.NO_TARGET_STATION_IN_RESULTS)
+          return
+        }
+
+        setDepartureStation(targetStation)
+      } catch (error) {
+        console.error(error)
+        setError(ERRORS.GENERIC_NETWORK_ERROR)
         return
       }
-
-      const stations = await data.json();
-      const targetStation = stations.find((e: DepartureStationProps) => e.type === TYPE_STATION)
-
-      if (targetStation == null) {
-        setError(ERRORS.NO_TARGET_STATION_IN_RESULTS)
-        console.error(ERRORS.NO_TARGET_STATION_IN_RESULTS)
-        return
-      }
-
-      setDepartureStation(targetStation)
     }
 
     setIsLoading(true)
     getDepartureStation()
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams]);
+  }, [searchParams])
 
   /**
    * Load Departures
    */
   useEffect(() => {
     const getDepartures = async () => {
-      const data = await fetch(`${MVG_API_BASE_URI}/departure?globalId=${departureStation?.globalId}&limit=20&offsetInMinutes=0`, {
-        method: "GET"
-      });
-
-      if (!data.ok) {
-        setError(ERRORS.NO_DEPARTURE_DATA)
-        console.error(ERRORS.NO_DEPARTURE_DATA)
+      try {
+        const data = await fetch(`${MVG_API_BASE_URI}/departure?globalId=${departureStation?.globalId}&limit=20&offsetInMinutes=0`, {
+          method: "GET"
+        })
+  
+        if (!data.ok) {
+          console.error(ERRORS.NO_DEPARTURE_DATA)
+          setError(ERRORS.NO_DEPARTURE_DATA)
+          return
+        }
+  
+        const departures: DepartureProps[] = await data.json()
+        const sortedDepartures: TransformedDepartureProps[] = transformDepartures(departures)
+  
+        setDepartures(sortedDepartures)
+        setIsLoading(false)
+      } catch (error) {
+        console.error(error)
+        setError(ERRORS.GENERIC_NETWORK_ERROR)
         return
       }
-
-      const departures: DepartureProps[] = await data.json();
-      const sortedDepartures: TransformedDepartureProps[] = transformDepartures(departures)
-
-      setDepartures(sortedDepartures)
-      setIsLoading(false)
     }
 
     const intervalId = setInterval(getDepartures, DEPARTURE_REFRESH_INTERVAL)
     departureStation != null && getDepartures()
 
-    return () => clearInterval(intervalId);
+    return () => clearInterval(intervalId)
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [departureStation])
@@ -156,29 +172,29 @@ function App() {
    * @returns <span />
    */
   const calculateRemainingTime = (epochTime: number) => {
-    const currentTime = new Date().getTime();
-    const remainingMilliseconds = epochTime - currentTime;
+    const currentTime = new Date().getTime()
+    const remainingMilliseconds = epochTime - currentTime
 
     if (remainingMilliseconds < 60000) {
-      return (<strong className="blinking">now</strong>);
+      return (<strong className="blinking">now</strong>)
     }
 
-    const remainingMinutes = Math.floor(remainingMilliseconds / 60000);
-    const hours = Math.floor(remainingMinutes / 60);
-    const minutes = remainingMinutes % 60;
+    const remainingMinutes = Math.floor(remainingMilliseconds / 60000)
+    const hours = Math.floor(remainingMinutes / 60)
+    const minutes = remainingMinutes % 60
 
-    let remainingTimeString = '';
+    let remainingTimeString = ''
     if (hours > 0) {
-      remainingTimeString += `${hours} <small>${hours === 1 ? 'hr' : 'hrs'}</small>`;
+      remainingTimeString += `${hours} <small>${hours === 1 ? 'hr' : 'hrs'}</small>`
       if (minutes > 0) {
-        remainingTimeString += ` ${minutes} <small>${minutes === 1 ? 'min &nbsp;' : 'mins'}</small>`;
+        remainingTimeString += ` ${minutes} <small>${minutes === 1 ? 'min &nbsp;' : 'mins'}</small>`
       }
     } else {
-      remainingTimeString += `${minutes} <small>${minutes === 1 ? 'min &nbsp;' : 'mins'}</small>`;
+      remainingTimeString += `${minutes} <small>${minutes === 1 ? 'min &nbsp;' : 'mins'}</small>`
     }
 
-    return (<span dangerouslySetInnerHTML={{ __html: remainingTimeString }}></span>);
-  };
+    return (<span dangerouslySetInnerHTML={{ __html: remainingTimeString }}></span>)
+  }
 
   /**
    * Transform Departures
@@ -187,38 +203,38 @@ function App() {
    */
   function transformDepartures(departures: DepartureProps[]): TransformedDepartureProps[] {
     const transformedArray = departures.reduce((acc: TransformedDepartureProps[], departure: DepartureProps) => {
-      const { label, destination } = departure;
-      const labelIndex = acc.findIndex(item => item.label === label);
+      const { label, destination } = departure
+      const labelIndex = acc.findIndex(item => item.label === label)
       if (labelIndex === -1) {
-        acc.push({ label, destinations: [{ destination, departures: [departure] }] });
+        acc.push({ label, destinations: [{ destination, departures: [departure] }] })
       } else {
-        const destIndex = acc[labelIndex].destinations.findIndex(item => item.destination === destination);
+        const destIndex = acc[labelIndex].destinations.findIndex(item => item.destination === destination)
         if (destIndex === -1) {
-          acc[labelIndex].destinations.push({ destination, departures: [departure] });
+          acc[labelIndex].destinations.push({ destination, departures: [departure] })
         } else {
-          acc[labelIndex].destinations[destIndex].departures.push(departure);
+          acc[labelIndex].destinations[destIndex].departures.push(departure)
         }
       }
-      return acc;
-    }, []);
+      return acc
+    }, [])
 
     // Sort the transformed array so that 'UBAHN' departures come first
     transformedArray.sort((a, b) => {
-      const aHasUBahn = a.destinations.some(dest => dest.departures.some(dep => dep.transportType === TYPE_UBAHN));
-      const bHasUBahn = b.destinations.some(dest => dest.departures.some(dep => dep.transportType === TYPE_UBAHN));
+      const aHasUBahn = a.destinations.some(dest => dest.departures.some(dep => dep.transportType === TYPE_UBAHN))
+      const bHasUBahn = b.destinations.some(dest => dest.departures.some(dep => dep.transportType === TYPE_UBAHN))
       if (aHasUBahn && !bHasUBahn) {
-        return -1;
+        return -1
       } else if (!aHasUBahn && bHasUBahn) {
-        return 1;
+        return 1
       } else {
-        return 0;
+        return 0
       }
-    });
+    })
 
     // Sort destinations alphabetically
     transformedArray.forEach(item => {
-      item.destinations.sort((a, b) => a.destination.localeCompare(b.destination));
-    });
+      item.destinations.sort((a, b) => a.destination.localeCompare(b.destination))
+    })
 
     return transformedArray.map(item => ({
       label: item.label,
@@ -226,7 +242,7 @@ function App() {
         destination: dest.destination,
         departures: dest.departures.sort((a, b) => a.realtimeDepartureTime - b.realtimeDepartureTime).slice(0, 2)
       }))
-    }));
+    }))
   }
 
   return (
@@ -284,17 +300,17 @@ function App() {
                             </tr>
                           ))}
                         </React.Fragment>
-                      );
+                      )
                     })}
                   </React.Fragment>
-                );
+                )
               })}
             </tbody>
           </table>
         </div>
       </header>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
