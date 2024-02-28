@@ -189,3 +189,27 @@
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+.error-container {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.5); /* Semi-transparent background */
+  z-index: 9999; /* Ensure it's on top */
+}
+
+.error-text {
+  margin: 0;
+  font-size: 3vw;
+  color: black; /* Text color */
+  margin-left: 10px; /* Adjust spacing between text and spinner */
+}
+
+.red {
+  color: darkred;
+}

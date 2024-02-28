@@ -55,6 +55,7 @@ function App() {
   const [departureStation, setDepartureStation] = useState<DepartureStationProps>()
   const [departures, setDepartures] = useState<TransformedDepartureProps[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [isError, setIsError] = useState(false)
   const [searchParams] = useSearchParams()
 
   // load departure station
@@ -64,8 +65,20 @@ function App() {
       let data = await fetch(`https://www.mvg.de/api/fib/v2/location?query=${encodeURI(station)}`, {
         method: "GET"
       });
+
+      if (!data.ok) {
+        setIsError(true)
+        return
+      }
+
       const stations = await data.json();
       const targetStation = stations.find((e: DepartureStationProps) => e.type === TYPE_STATION)
+
+      if (targetStation == null) {
+        setIsError(true)
+        return
+      }
+
       setDepartureStation(targetStation)
     }
 
@@ -161,11 +174,20 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        {isLoading && (
+        {isLoading && !isError && (
           <div className="loading-container">
             <div className="loading-spinner"></div>
             <p className="loading-text">Loading Departures</p>
-        </div>
+          </div>
+        )}
+        {isError && (
+          <div className="error-container">
+            <p className="error-text">
+              <span className='red'>error &#187;</span> could not fetch station or departures<br />
+              <hr />
+              <small>Please verify that the departure station is correct</small>
+            </p>
+          </div>
         )}
         <div className='departures-container'>
           <table className='departures'>
