@@ -210,6 +210,11 @@
   margin-left: 10px; /* Adjust spacing between text and spinner */
 }
 
+.error-text small {
+  font-size: 2vw;
+  text-align: center;
+}
+
 .red {
-  color: darkred;
+  color: red;
 }
