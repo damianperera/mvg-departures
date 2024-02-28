@@ -54,7 +54,7 @@ function App() {
   /**
    * Constants
    */
-  const DEFAULT_STATION = 'Westpark'
+  const DEFAULT_STATION = 'Forstenrieder Allee'
   const TYPE_STATION = 'STATION'
   const TYPE_UBAHN = 'UBAHN'
   const TEXT_SEV = 'SEV'
