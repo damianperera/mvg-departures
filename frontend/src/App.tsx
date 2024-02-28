@@ -51,12 +51,17 @@ type ErrorMessageProps = {
 }
 
 function App() {
+  /**
+   * Constants
+   */
   const DEFAULT_STATION = 'Forstenrieder Allee'
   const TYPE_STATION = 'STATION'
   const TYPE_UBAHN = 'UBAHN'
   const TEXT_SEV = 'SEV'
   const TEXT_CANCELLED = 'CANCELLED'
   const TEXT_DELAYED = 'DELAYED'
+  const MVG_API_BASE_URI = 'https://www.mvg.de/api/fib/v2'
+  const DEPARTURE_REFRESH_INTERVAL = 60 * 1000
   const ERRORS: { [key: string]: ErrorMessageProps } = {
     NO_DEPARTURE_STATION_DATA: {
       reason: "could not fetch data for departure station",
@@ -71,17 +76,23 @@ function App() {
       message: "Please verify that you are connected to the internet and try again"
     }
   }
+
+  /**
+   * Effects
+   */
   const [departureStation, setDepartureStation] = useState<DepartureStationProps>()
   const [departures, setDepartures] = useState<TransformedDepartureProps[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<ErrorMessageProps>()
   const [searchParams] = useSearchParams()
 
-  // load departure station
+  /**
+   * Load Departure Station
+   */
   useEffect(() => {
     const getDepartureStation = async () => {
       const station = searchParams.get('station') || DEFAULT_STATION
-      let data = await fetch(`https://www.mvg.de/api/fib/v2/location?query=${encodeURI(station)}`, {
+      let data = await fetch(`${MVG_API_BASE_URI}/location?query=${encodeURI(station)}`, {
         method: "GET"
       });
 
@@ -109,10 +120,12 @@ function App() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
-  // initial + scheduled departure update
+  /**
+   * Load Departures
+   */
   useEffect(() => {
     const getDepartures = async () => {
-      const data = await fetch(`https://www.mvg.de/api/fib/v2/departure?globalId=${departureStation?.globalId}&limit=20&offsetInMinutes=0`, {
+      const data = await fetch(`${MVG_API_BASE_URI}/departure?globalId=${departureStation?.globalId}&limit=20&offsetInMinutes=0`, {
         method: "GET"
       });
 
@@ -129,12 +142,19 @@ function App() {
       setIsLoading(false)
     }
 
+    const intervalId = setInterval(getDepartures, DEPARTURE_REFRESH_INTERVAL)
     departureStation != null && getDepartures()
-    return () => clearInterval(setInterval(getDepartures, 60000));
+
+    return () => clearInterval(intervalId);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [departureStation])
 
+  /**
+   * Returns a fully defined <span /> based on the provided epoch
+   * @param epochTime 
+   * @returns <span />
+   */
   const calculateRemainingTime = (epochTime: number) => {
     const currentTime = new Date().getTime();
     const remainingMilliseconds = epochTime - currentTime;
@@ -160,6 +180,11 @@ function App() {
     return (<span dangerouslySetInnerHTML={{ __html: remainingTimeString }}></span>);
   };
 
+  /**
+   * Transform Departures
+   * @param departures DepartureProps[]
+   * @returns TransformedDepartureProps[]
+   */
   function transformDepartures(departures: DepartureProps[]): TransformedDepartureProps[] {
     const transformedArray = departures.reduce((acc: TransformedDepartureProps[], departure: DepartureProps) => {
       const { label, destination } = departure;
