@@ -169,6 +169,44 @@ function App() {
   }, [departureStation])
 
   /**
+   * Daily Reload
+   */
+  useEffect(() => {
+    const dailyReload = () => {
+      const now = new Date()
+      
+      // Check if it's already past 3:00 AM for today
+      if (now.getHours() > 3 || (now.getHours() === 3 && now.getMinutes() > 0)) {
+        const tomorrow = new Date(now)
+        tomorrow.setDate(tomorrow.getDate() + 1)
+        tomorrow.setHours(3, 0, 0, 0)
+        const millisLeft = tomorrow.getTime() - now.getTime()
+
+        setTimeout(() => {
+          window.location.reload()
+        }, millisLeft)
+
+        printLog(millisLeft)
+      } else {
+        const millisLeft = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 3, 0, 0, 0).getTime() - now.getTime()
+        
+        setTimeout(() => {
+          window.location.reload()
+        }, millisLeft)
+
+        printLog(millisLeft)
+      }
+    }
+
+    const printLog = (millisLeft: number) => {
+      const dateObj = new Date(millisLeft)
+      console.log(`This application will be reloaded automatically in ${dateObj.getHours()} hours and ${dateObj.getMinutes()} minutes`)
+    }
+
+    dailyReload();
+  }, [])
+
+  /**
    * Returns a fully defined <span /> based on the provided epoch
    * @param epochTime 
    * @returns <span />
