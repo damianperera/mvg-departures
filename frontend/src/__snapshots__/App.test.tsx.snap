@@ -1,0 +1,33 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders correctly 1`] = `
+<div
+  class="App"
+>
+  <header
+    class="App-header"
+  >
+    <div
+      class="loading-container"
+    >
+      <div
+        class="loading-spinner"
+      />
+      <p
+        class="loading-text"
+      >
+        Loading Departures
+      </p>
+    </div>
+    <div
+      class="departures-container"
+    >
+      <table
+        class="departures"
+      >
+        <tbody />
+      </table>
+    </div>
+  </header>
+</div>
+`;
