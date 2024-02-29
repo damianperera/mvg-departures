@@ -65,15 +65,15 @@ function App() {
   const ERRORS: { [key: string]: ErrorMessageProps } = {
     NO_DEPARTURE_STATION_DATA: {
       reason: "could not fetch data for departure station",
-      message: "Please verify that you are connected to the internet and try again"
+      message: "Please verify that you are connected to the internet or wait awhile and try again"
     },
     NO_TARGET_STATION_IN_RESULTS: {
       reason: "could not find a departure station in your location",
-      message: "Please verify that your station is correct and try again"
+      message: "Please verify that your station is correct or wait awhile and try again"
     },
     NO_DEPARTURE_DATA: {
       reason: "could not fetch departures for provided station",
-      message: "Please verify that you are connected to the internet and try again"
+      message: "Please verify that you are connected to the internet or wait awhile and try again"
     },
     GENERIC_NETWORK_ERROR: {
       reason: "could not communicate with upstream servers",
@@ -116,6 +116,7 @@ function App() {
           return
         }
 
+        setError(undefined)
         setDepartureStation(targetStation)
       } catch (error) {
         console.error(error)
@@ -150,6 +151,7 @@ function App() {
         const sortedDepartures: TransformedDepartureProps[] = transformDepartures(departures)
   
         setDepartures(sortedDepartures)
+        setError(undefined)
         setIsLoading(false)
       } catch (error) {
         console.error(error)
