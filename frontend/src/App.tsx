@@ -128,7 +128,7 @@ function App() {
     setIsLoading(true)
     getDepartureStation()
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams])
 
   /**
@@ -140,16 +140,16 @@ function App() {
         const data = await fetch(`${MVG_API_BASE_URI}/departure?globalId=${departureStation?.globalId}&limit=20&offsetInMinutes=0`, {
           method: "GET"
         })
-  
+
         if (!data.ok) {
           console.error(ERRORS.NO_DEPARTURE_DATA)
           setError(ERRORS.NO_DEPARTURE_DATA)
           return
         }
-  
+
         const departures: DepartureProps[] = await data.json()
         const sortedDepartures: TransformedDepartureProps[] = transformDepartures(departures)
-  
+
         setDepartures(sortedDepartures)
         setError(undefined)
         setIsLoading(false)
@@ -165,7 +165,7 @@ function App() {
 
     return () => clearInterval(intervalId)
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [departureStation])
 
   /**
@@ -174,7 +174,7 @@ function App() {
   useEffect(() => {
     const dailyReload = () => {
       const now = new Date()
-      
+
       // Check if it's already past 3:00 AM for today
       if (now.getHours() > 3 || (now.getHours() === 3 && now.getMinutes() > 0)) {
         const tomorrow = new Date(now)
@@ -189,7 +189,7 @@ function App() {
         printLog(millisLeft)
       } else {
         const millisLeft = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 3, 0, 0, 0).getTime() - now.getTime()
-        
+
         setTimeout(() => {
           window.location.reload()
         }, millisLeft)
@@ -286,69 +286,67 @@ function App() {
   }
 
   return (
-    <div className="App">
-      <header className="App-header">
-        {isLoading && !error && (
-          <div className="loading-container">
-            <div className="loading-spinner"></div>
-            <p className="loading-text">Loading Departures</p>
-          </div>
-        )}
-        {error && (
-          <div className="error-container">
-            <p className="error-text">
-              <span className='red'>error &#187;</span> {error.reason}<br />
-              <small>{error.message}</small>
-            </p>
-          </div>
-        )}
-        <div className='departures-container'>
-          <table className='departures'>
-            <tbody>
-              {departures.map((item, index) => {
-                return (
-                  <React.Fragment key={index}>
-                    {item.destinations.map((dest, destIndex) => {
-                      return (
-                        <React.Fragment key={`${index}-${destIndex}`}>
-                          {dest.departures.map((departure, depIndex) => (
-                            <tr key={`${index}-${destIndex}-${depIndex}`}>
-                              {depIndex === 0 && (
-                                <React.Fragment>
-                                  {destIndex === 0 && (
-                                    <td key={`transport-label-${index}-${destIndex}-${depIndex}`} className='center' rowSpan={item.destinations.reduce((acc, dest) => acc + dest.departures.length, 0)}>
-                                      {item.label}
-                                    </td>
-                                  )}
-                                  <td key={`destination-${index}-${destIndex}-${depIndex}`} className='left' rowSpan={dest.departures.length}>
-                                    {dest.destination}
-                                  </td>
-                                </React.Fragment>
-                              )}
-                              <td key={`departure-${index}-${destIndex}-${depIndex}`} className='right'>
-                                {departure.sev && (
-                                  <div key={`sev-${index}-${destIndex}-${depIndex}`} className='departureNested departureSev'>{TEXT_SEV}</div>
-                                )}
-                                {departure.cancelled && (
-                                  <div key={`cancelled-${index}-${destIndex}-${depIndex}`} className='departureNested departureCancelled blinking'>{TEXT_CANCELLED}</div>
-                                )}
-                                {(departure.delayInMinutes > 0 && !departure.cancelled) && (
-                                  <div key={`delayed-${index}-${destIndex}-${depIndex}`} className='departureNested departureDelayed'>{TEXT_DELAYED}</div>
-                                )}
-                                {calculateRemainingTime(departure.realtimeDepartureTime)}
-                              </td>
-                            </tr>
-                          ))}
-                        </React.Fragment>
-                      )
-                    })}
-                  </React.Fragment>
-                )
-              })}
-            </tbody>
-          </table>
+    <div className="app">
+      {isLoading && !error && (
+        <div className="loading-container">
+          <div className="loading-spinner"></div>
+          <p className="loading-text">Loading Departures</p>
         </div>
-      </header>
+      )}
+      {error && (
+        <div className="error-container">
+          <p className="error-text">
+            <span className='red'>error &#187;</span> {error.reason}<br />
+            <small>{error.message}</small>
+          </p>
+        </div>
+      )}
+      <div className='departures-container'>
+        <table className='departures'>
+          <tbody>
+            {departures.map((item, index) => {
+              return (
+                <React.Fragment key={index}>
+                  {item.destinations.map((dest, destIndex) => {
+                    return (
+                      <React.Fragment key={`${index}-${destIndex}`}>
+                        {dest.departures.map((departure, depIndex) => (
+                          <tr key={`${index}-${destIndex}-${depIndex}`}>
+                            {depIndex === 0 && (
+                              <React.Fragment>
+                                {destIndex === 0 && (
+                                  <td key={`transport-label-${index}-${destIndex}-${depIndex}`} className='center' rowSpan={item.destinations.reduce((acc, dest) => acc + dest.departures.length, 0)}>
+                                    {item.label}
+                                  </td>
+                                )}
+                                <td key={`destination-${index}-${destIndex}-${depIndex}`} className='left' rowSpan={dest.departures.length}>
+                                  {dest.destination}
+                                </td>
+                              </React.Fragment>
+                            )}
+                            <td key={`departure-${index}-${destIndex}-${depIndex}`} className='right'>
+                              {departure.sev && (
+                                <div key={`sev-${index}-${destIndex}-${depIndex}`} className='departureNested departureSev'>{TEXT_SEV}</div>
+                              )}
+                              {departure.cancelled && (
+                                <div key={`cancelled-${index}-${destIndex}-${depIndex}`} className='departureNested departureCancelled blinking'>{TEXT_CANCELLED}</div>
+                              )}
+                              {(departure.delayInMinutes > 0 && !departure.cancelled) && (
+                                <div key={`delayed-${index}-${destIndex}-${depIndex}`} className='departureNested departureDelayed'>{TEXT_DELAYED}</div>
+                              )}
+                              {calculateRemainingTime(departure.realtimeDepartureTime)}
+                            </td>
+                          </tr>
+                        ))}
+                      </React.Fragment>
+                    )
+                  })}
+                </React.Fragment>
+              )
+            })}
+          </tbody>
+        </table>
+      </div>
     </div>
   )
 }
