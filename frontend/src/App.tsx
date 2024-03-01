@@ -299,6 +299,7 @@ function App() {
 
   const updateDepartureModal = () => {
     triggerDepartureSelectorModal()
+    setError(undefined)
     setIsLoading(true)
     setSearchParams({ 'station': userUpdatedStation })
   }
