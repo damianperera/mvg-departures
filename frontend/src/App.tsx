@@ -62,6 +62,7 @@ function App() {
   const TEXT_DELAYED = 'DELAYED'
   const MVG_API_BASE_URI = 'https://www.mvg.de/api/fib/v2'
   const DEPARTURE_REFRESH_INTERVAL = 60 * 1000
+  const QUERY_PARAM_STATION = 'station'
   const ERRORS: { [key: string]: ErrorMessageProps } = {
     NO_DEPARTURE_STATION_DATA: {
       reason: "could not fetch data for departure station",
@@ -88,15 +89,18 @@ function App() {
   const [departures, setDepartures] = useState<TransformedDepartureProps[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<ErrorMessageProps>()
-  const [searchParams] = useSearchParams()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [isDepartureStationModal, setIsDepartureStationModal] = useState(false)
+  const [userUpdatedStation, setUserUpdatedStation] = useState('')
 
   /**
    * Load Departure Station
    */
   useEffect(() => {
     const getDepartureStation = async () => {
+      setIsLoading(true)
       try {
-        const station = searchParams.get('station') || DEFAULT_STATION
+        const station = searchParams.get(QUERY_PARAM_STATION) || DEFAULT_STATION
         const data = await fetch(`${MVG_API_BASE_URI}/location?query=${encodeURI(station)}`, {
           method: "GET"
         })
@@ -104,6 +108,7 @@ function App() {
         if (!data.ok) {
           console.error(ERRORS.NO_DEPARTURE_STATION_DATA)
           setError(ERRORS.NO_DEPARTURE_STATION_DATA)
+          setIsLoading(false)
           return
         }
 
@@ -113,6 +118,7 @@ function App() {
         if (targetStation == null) {
           console.error(ERRORS.NO_TARGET_STATION_IN_RESULTS)
           setError(ERRORS.NO_TARGET_STATION_IN_RESULTS)
+          setIsLoading(false)
           return
         }
 
@@ -121,6 +127,7 @@ function App() {
       } catch (error) {
         console.error(error)
         setError(ERRORS.GENERIC_NETWORK_ERROR)
+        setIsLoading(false)
         return
       }
     }
@@ -144,6 +151,7 @@ function App() {
         if (!data.ok) {
           console.error(ERRORS.NO_DEPARTURE_DATA)
           setError(ERRORS.NO_DEPARTURE_DATA)
+          setIsLoading(false)
           return
         }
 
@@ -156,6 +164,7 @@ function App() {
       } catch (error) {
         console.error(error)
         setError(ERRORS.GENERIC_NETWORK_ERROR)
+        setIsLoading(false)
         return
       }
     }
@@ -285,8 +294,31 @@ function App() {
     }))
   }
 
+  const triggerDepartureSelectorModal = () =>
+    setIsDepartureStationModal(!isDepartureStationModal)
+
+  const updateDepartureModal = () => {
+    triggerDepartureSelectorModal()
+    setIsLoading(true)
+    setSearchParams({ 'station': userUpdatedStation })
+  }
+
   return (
-    <div className="app">
+    <div className="app" onClick={triggerDepartureSelectorModal}>
+      {isDepartureStationModal && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h2>Departure Station</h2>
+            <div className='modal-content'>
+              <input type="text" placeholder={departureStation?.name || 'Enter Departure Station'} onChange={(e) => setUserUpdatedStation(e.target.value)} onClick={(e) => e.stopPropagation()} />
+              <div className="modal-buttons">
+                <button onClick={triggerDepartureSelectorModal}>Cancel</button>
+                <button onClick={updateDepartureModal}>Confirm</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       {isLoading && !error && (
         <div className="loading-container">
           <div className="loading-spinner"></div>
