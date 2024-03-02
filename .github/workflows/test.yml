@@ -5,7 +5,7 @@ on:
     - master
 
 jobs:
-  test:
+  jest:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -28,3 +28,26 @@ jobs:
       - name: Test
         working-directory: frontend/
         run: yarn test
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Cache dependencies
+        id: cache-nodemodules
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: frontend/node_modules
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('frontend/yarn.lock') }}
+          restore-keys: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('frontend/yarn.lock') }}
+      - name: Install dependencies
+        if: steps.cache-nodemodules.outputs.cache-hit != 'true'
+        working-directory: frontend/
+        run: yarn install --frozen-lockfile
+      - name: Build
+        working-directory: frontend/
+        run: yarn build
