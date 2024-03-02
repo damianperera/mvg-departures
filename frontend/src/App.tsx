@@ -331,12 +331,12 @@ function App() {
   return (
     <div className="app" onClick={triggerDepartureSelectorModal}>
       {isDepartureStationModal && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <h2>Departure Station</h2>
-            <div className='modal-content'>
-              <input type="text" placeholder={departureStation?.name || 'Enter Departure Station'} onChange={(e) => setUserUpdatedStation(e.target.value)} onClick={(e) => e.stopPropagation()} />
-              <div className="modal-buttons">
+        <div className="settings-overlay">
+          <div className="settings">
+            <h2>Settings {departureStation !== undefined && (<div><small>{departureStation.name}</small></div>)}</h2>
+            <div className='settings-content'>
+              <input type="text" placeholder={'Enter Departure Station'} onChange={(e) => setUserUpdatedStation(e.target.value)} onClick={(e) => e.stopPropagation()} />
+              <div className="settings-buttons">
                 <button onClick={resetApp}>Reset App</button>
                 <button onClick={triggerDepartureSelectorModal}>Cancel</button>
                 <button onClick={updateDepartureModal}>Confirm</button>
