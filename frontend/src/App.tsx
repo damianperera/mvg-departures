@@ -94,6 +94,33 @@ function App() {
   const [userUpdatedStation, setUserUpdatedStation] = useState('')
 
   /**
+   * Reset All States
+   */
+  const resetState = () => {
+    setIsDepartureStationModal(false)
+    setIsLoading(false)
+    resetErrors()
+    setDepartureStation(undefined)
+    setDepartures([])
+  }
+
+  /**
+   * Reset Errors
+   */
+  const resetErrors = () => {
+    setError(undefined)
+  }
+
+  /**
+   * Reset States, Search Params & Reload App
+   */
+  const resetApp = () => {
+    resetState()
+    setSearchParams({})
+    window.location.reload()
+  }
+
+  /**
    * Load Departure Station
    */
   useEffect(() => {
@@ -106,9 +133,9 @@ function App() {
         })
 
         if (!data.ok) {
+          resetState()
           console.error(ERRORS.NO_DEPARTURE_STATION_DATA)
           setError(ERRORS.NO_DEPARTURE_STATION_DATA)
-          setIsLoading(false)
           return
         }
 
@@ -116,23 +143,22 @@ function App() {
         const targetStation = stations.find((e: DepartureStationProps) => e.type === TYPE_STATION)
 
         if (targetStation == null) {
+          resetState()
           console.error(ERRORS.NO_TARGET_STATION_IN_RESULTS)
           setError(ERRORS.NO_TARGET_STATION_IN_RESULTS)
-          setIsLoading(false)
           return
         }
 
-        setError(undefined)
+        resetErrors()
         setDepartureStation(targetStation)
       } catch (error) {
-        console.error(error)
+        resetState()
+        console.error(ERRORS.GENERIC_NETWORK_ERROR)
         setError(ERRORS.GENERIC_NETWORK_ERROR)
-        setIsLoading(false)
         return
       }
     }
 
-    setIsLoading(true)
     getDepartureStation()
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -149,9 +175,9 @@ function App() {
         })
 
         if (!data.ok) {
+          resetState()
           console.error(ERRORS.NO_DEPARTURE_DATA)
           setError(ERRORS.NO_DEPARTURE_DATA)
-          setIsLoading(false)
           return
         }
 
@@ -159,12 +185,12 @@ function App() {
         const sortedDepartures: TransformedDepartureProps[] = transformDepartures(departures)
 
         setDepartures(sortedDepartures)
-        setError(undefined)
+        resetErrors()
         setIsLoading(false)
       } catch (error) {
-        console.error(error)
+        resetState()
+        console.error(ERRORS.GENERIC_NETWORK_ERROR)
         setError(ERRORS.GENERIC_NETWORK_ERROR)
-        setIsLoading(false)
         return
       }
     }
@@ -298,9 +324,7 @@ function App() {
     setIsDepartureStationModal(!isDepartureStationModal)
 
   const updateDepartureModal = () => {
-    triggerDepartureSelectorModal()
-    setError(undefined)
-    setIsLoading(true)
+    resetState()
     setSearchParams({ 'station': userUpdatedStation })
   }
 
@@ -313,6 +337,7 @@ function App() {
             <div className='modal-content'>
               <input type="text" placeholder={departureStation?.name || 'Enter Departure Station'} onChange={(e) => setUserUpdatedStation(e.target.value)} onClick={(e) => e.stopPropagation()} />
               <div className="modal-buttons">
+                <button onClick={resetApp}>Reset App</button>
                 <button onClick={triggerDepartureSelectorModal}>Cancel</button>
                 <button onClick={updateDepartureModal}>Confirm</button>
               </div>
