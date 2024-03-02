@@ -2,32 +2,28 @@
 
 exports[`app skeleton renders correctly 1`] = `
 <div
-  class="App"
+  class="app"
 >
-  <header
-    class="App-header"
+  <div
+    class="loading-container"
   >
     <div
-      class="loading-container"
+      class="loading-spinner"
+    />
+    <p
+      class="loading-text"
     >
-      <div
-        class="loading-spinner"
-      />
-      <p
-        class="loading-text"
-      >
-        Loading Departures
-      </p>
-    </div>
-    <div
-      class="departures-container"
+      Loading Departures
+    </p>
+  </div>
+  <div
+    class="departures-container"
+  >
+    <table
+      class="departures"
     >
-      <table
-        class="departures"
-      >
-        <tbody />
-      </table>
-    </div>
-  </header>
+      <tbody />
+    </table>
+  </div>
 </div>
 `;
