@@ -90,14 +90,14 @@ function App() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<ErrorMessageProps>()
   const [searchParams, setSearchParams] = useSearchParams()
-  const [isDepartureStationModal, setIsDepartureStationModal] = useState(false)
+  const [showSettingsModal, setShowSettingsModal] = useState(false)
   const [userUpdatedStation, setUserUpdatedStation] = useState('')
 
   /**
    * Reset All States
    */
   const resetState = () => {
-    setIsDepartureStationModal(false)
+    setShowSettingsModal(false)
     setIsLoading(false)
     resetErrors()
     setDepartureStation(undefined)
@@ -320,17 +320,17 @@ function App() {
     }))
   }
 
-  const triggerDepartureSelectorModal = () =>
-    setIsDepartureStationModal(!isDepartureStationModal)
+  const triggerSettingsModal = () =>
+    setShowSettingsModal(!showSettingsModal)
 
-  const updateDepartureModal = () => {
+  const updateSettingsModal = () => {
     resetState()
     setSearchParams({ 'station': userUpdatedStation })
   }
 
   return (
-    <div className="app" onClick={triggerDepartureSelectorModal}>
-      {isDepartureStationModal && (
+    <div className="app" onClick={triggerSettingsModal}>
+      {showSettingsModal && (
         <div className="settings-overlay">
           <div className="settings">
             <h2>Settings {departureStation !== undefined && (<div><small>{departureStation.name}</small></div>)}</h2>
@@ -338,8 +338,8 @@ function App() {
               <input type="text" placeholder={'Enter Departure Station'} onChange={(e) => setUserUpdatedStation(e.target.value)} onClick={(e) => e.stopPropagation()} />
               <div className="settings-buttons">
                 <button onClick={resetApp}>Reset App</button>
-                <button onClick={triggerDepartureSelectorModal}>Cancel</button>
-                <button onClick={updateDepartureModal}>Confirm</button>
+                <button onClick={triggerSettingsModal}>Cancel</button>
+                <button onClick={updateSettingsModal}>Confirm</button>
               </div>
             </div>
           </div>
