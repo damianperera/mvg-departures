@@ -1,7 +1,11 @@
 name: test
-on: 
+on:
   pull_request_target:
-    branches: ["main"]
+    branches: ['main']
+  push:
+   branches: ['main']
+   paths-ignore: ['**/*.md']
+  workflow_dispatch:
 
 jobs:
   jest:
