@@ -1,4 +1,4 @@
-name: test
+name: Test
 on:
   pull_request_target:
     branches: ['main']
@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  jest:
+  Jest:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -31,7 +31,7 @@ jobs:
       - name: Test
         working-directory: frontend/
         run: yarn test
-  build:
+  Build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
