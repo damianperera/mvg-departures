@@ -1,14 +1,13 @@
-name: build
+name: Build & Deploy
 on:
   workflow_run:
-    workflows: ['test']
+    workflows: ['Test']
     branches: ['main']
     types:
       - completed
 
 jobs:
-  # Build job
-  build:
+  Build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -48,10 +47,9 @@ jobs:
           name: github-pages
           path: ${{ runner.temp }}/artifact.tar
           retention-days: ${{ inputs.retention-days }}
-  # Deploy job
-  deploy:
-    needs: build
-    # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
+  Deploy:
+    needs: Build
+    # Grant GITHUB_TOKEN the permissions required to make a github-pages deployment
     permissions:
       pages: write # to deploy to Pages
       id-token: write # to verify the deployment originates from an appropriate source
