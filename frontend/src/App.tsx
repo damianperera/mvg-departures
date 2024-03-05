@@ -63,6 +63,7 @@ function App() {
   const MVG_API_BASE_URI = 'https://www.mvg.de/api/fib/v2'
   const DEPARTURE_REFRESH_INTERVAL = 60 * 1000
   const QUERY_PARAM_STATION = 'station'
+  const HELP_URL = 'https://github.com/damianperera/mvg-departures/issues/new'
   const ERRORS: { [key: string]: ErrorMessageProps } = {
     NO_DEPARTURE_STATION_DATA: {
       reason: "could not fetch data for departure station",
@@ -335,6 +336,9 @@ function App() {
     }
   }
 
+  const navigateToHelp = () =>
+    window.location.href = HELP_URL
+
   return (
     <div className="app">
       {showSettingsModal && (
@@ -344,10 +348,11 @@ function App() {
             <div className='settings-content'>
               <input type="text" placeholder={'Enter Departure Station'} onChange={(e) => setUserUpdatedStation(e.target.value)} onClick={(e) => e.stopPropagation()} />
               <div className="settings-buttons">
+                <button onClick={navigateToHelp}>Help</button>
                 <button onClick={() => resetApp(true)}>Reload</button>
                 <button onClick={() => resetApp(false)}>Reset</button>
-                <button onClick={triggerSettingsModal}>Cancel</button>
                 <button onClick={updateSettingsModal}>Confirm</button>
+                <button onClick={triggerSettingsModal}>Cancel</button>
               </div>
             </div>
           </div>
