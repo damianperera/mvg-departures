@@ -114,9 +114,11 @@ function App() {
   /**
    * Reset States, Search Params & Reload App
    */
-  const resetApp = () => {
+  const resetApp = (persistSearchParams: boolean = false) => {
     resetState()
-    setSearchParams({})
+    if (!persistSearchParams) {
+      setSearchParams({})
+    }
     window.location.reload()
   }
 
@@ -325,11 +327,16 @@ function App() {
 
   const updateSettingsModal = () => {
     resetState()
-    setSearchParams({ 'station': userUpdatedStation })
+    if (searchParams.get(QUERY_PARAM_STATION) === userUpdatedStation) {
+      resetApp(false)
+    } else {
+      setSearchParams({ 'station': userUpdatedStation })
+      resetApp(true)
+    }
   }
 
   return (
-    <div className="app" onClick={triggerSettingsModal}>
+    <div className="app">
       {showSettingsModal && (
         <div className="settings-overlay">
           <div className="settings">
@@ -337,7 +344,8 @@ function App() {
             <div className='settings-content'>
               <input type="text" placeholder={'Enter Departure Station'} onChange={(e) => setUserUpdatedStation(e.target.value)} onClick={(e) => e.stopPropagation()} />
               <div className="settings-buttons">
-                <button onClick={resetApp}>Reset App</button>
+                <button onClick={() => resetApp(true)}>Reload</button>
+                <button onClick={() => resetApp(false)}>Reset</button>
                 <button onClick={triggerSettingsModal}>Cancel</button>
                 <button onClick={updateSettingsModal}>Confirm</button>
               </div>
@@ -346,20 +354,20 @@ function App() {
         </div>
       )}
       {isLoading && !error && (
-        <div className="loading-container">
+        <div className="loading-container" onClick={triggerSettingsModal}>
           <div className="loading-spinner"></div>
           <p className="loading-text">Loading Departures</p>
         </div>
       )}
       {error && (
-        <div className="error-container">
+        <div className="error-container" onClick={triggerSettingsModal}>
           <p className="error-text">
             <span className='red'>error &#187;</span> {error.reason}<br />
             <small>{error.message}</small>
           </p>
         </div>
       )}
-      <div className='departures-container'>
+      <div className='departures-container' onClick={triggerSettingsModal}>
         <table className='departures'>
           <tbody>
             {departures.map((item, index) => {
