@@ -351,7 +351,7 @@ function App() {
   return (
     <div className="app">
       {showSettingsModal && (
-        <div className="settings-overlay">
+        <div className="settings-container">
           <div className="settings">
             <h2>Settings {departureStation !== undefined && (<div><small>{departureStation.name}</small></div>)}</h2>
             <div className='settings-content'>
