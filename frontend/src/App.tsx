@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import './App.css'
+import { useHotkeys } from 'react-hotkeys-hook'
 
 type DepartureStationProps = {
   type: string
@@ -245,6 +246,13 @@ function App() {
   }, [])
 
   /**
+   * Hotkeys
+   */
+  useHotkeys('ctrl+1', () => triggerSettingsModal())
+  useHotkeys('ctrl+9', () => triggerSettingsReload())
+  useHotkeys('ctrl+0', () => triggerSettingsReset())
+
+  /**
    * Returns a fully defined <span /> based on the provided epoch
    * @param epochTime 
    * @returns <span />
@@ -323,10 +331,14 @@ function App() {
     }))
   }
 
-  const triggerSettingsModal = () =>
-    setShowSettingsModal(!showSettingsModal)
-
-  const updateSettingsModal = () => {
+  /**
+   * Triggers
+   */
+  const triggerSettingsModal = () => setShowSettingsModal(!showSettingsModal)
+  const triggerSettingsHelp = () => window.location.href = HELP_URL
+  const triggerSettingsReload = () => resetApp(true)
+  const triggerSettingsReset = () => resetApp(false)
+  const triggerSettingsConfirm = () => {
     resetState()
     if (searchParams.get(QUERY_PARAM_STATION) === userUpdatedStation) {
       resetApp(false)
@@ -336,9 +348,6 @@ function App() {
     }
   }
 
-  const navigateToHelp = () =>
-    window.location.href = HELP_URL
-
   return (
     <div className="app">
       {showSettingsModal && (
@@ -346,12 +355,12 @@ function App() {
           <div className="settings">
             <h2>Settings {departureStation !== undefined && (<div><small>{departureStation.name}</small></div>)}</h2>
             <div className='settings-content'>
-              <input type="text" placeholder={'Enter Departure Station'} onChange={(e) => setUserUpdatedStation(e.target.value)} onClick={(e) => e.stopPropagation()} />
+              <input autoFocus type="text" placeholder={'Enter Departure Station'} onChange={(e) => setUserUpdatedStation(e.target.value)} onClick={(e) => e.stopPropagation()} />
               <div className="settings-buttons">
-                <button onClick={navigateToHelp}>Help</button>
-                <button onClick={() => resetApp(true)}>Reload</button>
-                <button onClick={() => resetApp(false)}>Reset</button>
-                <button onClick={updateSettingsModal}>Confirm</button>
+                <button onClick={triggerSettingsHelp}>Help</button>
+                <button onClick={triggerSettingsReload}>Reload</button>
+                <button onClick={triggerSettingsReset}>Reset</button>
+                <button onClick={triggerSettingsConfirm}>Confirm</button>
                 <button onClick={triggerSettingsModal}>Cancel</button>
               </div>
             </div>
