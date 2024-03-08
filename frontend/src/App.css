@@ -268,3 +268,14 @@
 .settings-buttons button:first-child {
   border-color: gray;
 }
+
+.license {
+  margin-top: 2%;
+  font-size: 0.75vw;
+  border-top: 1px solid lightgray;
+  padding-top: 2%;
+}
+
+.license a {
+  text-decoration: none;
+}

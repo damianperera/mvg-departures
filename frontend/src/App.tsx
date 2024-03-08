@@ -64,23 +64,24 @@ function App() {
   const MVG_API_BASE_URI = 'https://www.mvg.de/api/fib/v2'
   const DEPARTURE_REFRESH_INTERVAL = 60 * 1000
   const QUERY_PARAM_STATION = 'station'
-  const HELP_URL = 'https://github.com/damianperera/mvg-departures/issues/new'
+  const HELP_URL = 'https://github.com/damianperera/mvg-departures'
+  const LICENSE_URL = 'https://github.com/damianperera/mvg-departures/blob/main/LICENSE'
   const ERRORS: { [key: string]: ErrorMessageProps } = {
     NO_DEPARTURE_STATION_DATA: {
-      reason: "could not fetch data for departure station",
-      message: "Please verify that you are connected to the internet or wait awhile and try again"
+      reason: 'could not fetch data for departure station',
+      message: 'Please verify that you are connected to the internet or wait awhile and try again'
     },
     NO_TARGET_STATION_IN_RESULTS: {
-      reason: "could not find a departure station in your location",
-      message: "Please verify that your station is correct or wait awhile and try again"
+      reason: 'could not find a departure station in your location',
+      message: 'Please verify that your station is correct or wait awhile and try again'
     },
     NO_DEPARTURE_DATA: {
-      reason: "could not fetch departures for provided station",
-      message: "Please verify that you are connected to the internet or wait awhile and try again"
+      reason: 'could not fetch departures for provided station',
+      message: 'Please verify that you are connected to the internet or wait awhile and try again'
     },
     GENERIC_NETWORK_ERROR: {
-      reason: "could not communicate with upstream servers",
-      message: "Please verify that you are connected to the internet or wait awhile and try again"
+      reason: 'could not communicate with upstream servers',
+      message: 'Please verify that you are connected to the internet or wait awhile and try again'
     }
   }
 
@@ -133,7 +134,7 @@ function App() {
       try {
         const station = searchParams.get(QUERY_PARAM_STATION) || DEFAULT_STATION
         const data = await fetch(`${MVG_API_BASE_URI}/location?query=${encodeURI(station)}`, {
-          method: "GET"
+          method: 'GET'
         })
 
         if (!data.ok) {
@@ -175,7 +176,7 @@ function App() {
     const getDepartures = async () => {
       try {
         const data = await fetch(`${MVG_API_BASE_URI}/departure?globalId=${departureStation?.globalId}&limit=20&offsetInMinutes=0`, {
-          method: "GET"
+          method: 'GET'
         })
 
         if (!data.ok) {
@@ -262,7 +263,7 @@ function App() {
     const remainingMilliseconds = epochTime - currentTime
 
     if (remainingMilliseconds < 60000) {
-      return (<strong className="blinking">now</strong>)
+      return (<strong className='blinking'>now</strong>)
     }
 
     const remainingMinutes = Math.floor(remainingMilliseconds / 60000)
@@ -349,14 +350,14 @@ function App() {
   }
 
   return (
-    <div className="app">
+    <div className='app'>
       {showSettingsModal && (
-        <div className="settings-container">
-          <div className="settings">
+        <div className='settings-container'>
+          <div className='settings'>
             <h2>Settings {departureStation !== undefined && (<div><small>{departureStation.name}</small></div>)}</h2>
             <div className='settings-content'>
-              <input autoFocus type="text" placeholder={'Enter Departure Station'} onChange={(e) => setUserUpdatedStation(e.target.value)} onClick={(e) => e.stopPropagation()} />
-              <div className="settings-buttons">
+              <input autoFocus type='text' placeholder={'Enter Departure Station'} onChange={(e) => setUserUpdatedStation(e.target.value)} onClick={(e) => e.stopPropagation()} />
+              <div className='settings-buttons'>
                 <button onClick={triggerSettingsHelp}>Help</button>
                 <button onClick={triggerSettingsReload}>Reload</button>
                 <button onClick={triggerSettingsReset}>Reset</button>
@@ -364,18 +365,19 @@ function App() {
                 <button onClick={triggerSettingsModal}>Cancel</button>
               </div>
             </div>
+            <div className='license'>&copy;{new Date().getFullYear()} Damian Perera | <a href={LICENSE_URL}>AGPL-3.0 License</a></div>
           </div>
         </div>
       )}
       {isLoading && !error && (
-        <div className="loading-container" onClick={triggerSettingsModal}>
-          <div className="loading-spinner"></div>
-          <p className="loading-text">Loading Departures</p>
+        <div className='loading-container' onClick={triggerSettingsModal}>
+          <div className='loading-spinner'></div>
+          <p className='loading-text'>Loading Departures</p>
         </div>
       )}
       {error && (
-        <div className="error-container" onClick={triggerSettingsModal}>
-          <p className="error-text">
+        <div className='error-container' onClick={triggerSettingsModal}>
+          <p className='error-text'>
             <span className='red'>error &#187;</span> {error.reason}<br />
             <small>{error.message}</small>
           </p>
