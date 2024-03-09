@@ -435,7 +435,10 @@ function App() {
                             {depIndex === 0 && (
                               <React.Fragment>
                                 {destIndex === 0 && (
-                                  <td key={`transport-label-${index}-${destIndex}-${depIndex}`} className='center' rowSpan={item.destinations.reduce((acc, dest) => acc + dest.departures.length, 0)}>
+                                  <td 
+                                    key={`transport-label-${index}-${destIndex}-${depIndex}`}
+                                    className='center' rowSpan={item.destinations.reduce((acc, dest) => acc + dest.departures.length, 0)}
+                                  >
                                     {item.label}
                                   </td>
                                 )}
@@ -449,7 +452,12 @@ function App() {
                                 <div key={`sev-${index}-${destIndex}-${depIndex}`} className='departureNested departureSev'>{TEXT_SEV}</div>
                               )}
                               {departure.cancelled && (
-                                <div key={`cancelled-${index}-${destIndex}-${depIndex}`} className='departureNested departureCancelled blinking'>{TEXT_CANCELLED}</div>
+                                <div
+                                  key={`cancelled-${index}-${destIndex}-${depIndex}`}
+                                  className='departureNested departureCancelled blinking'
+                                >
+                                  {TEXT_CANCELLED}
+                                </div>
                               )}
                               {(departure.delayInMinutes > 0 && !departure.cancelled) && (
                                 <div key={`delayed-${index}-${destIndex}-${depIndex}`} className='departureNested departureDelayed'>{TEXT_DELAYED}</div>
