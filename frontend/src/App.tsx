@@ -81,7 +81,7 @@ function App() {
   const SETTINGS_STATION_SELECTOR_DEFAULT_PLACEHOLDER = 'Select Departure Station'
   const ERRORS: { [key: string]: ErrorMessageProps } = {
     NO_DEPARTURE_DATA: {
-      reason: 'could not fetch departures for provided station',
+      reason: 'could not fetch departures for the selected station',
       message: 'Please verify that you are connected to the internet or wait awhile and try again'
     },
     GENERIC_NETWORK_ERROR: {
@@ -91,6 +91,10 @@ function App() {
     NO_SEARCH_STATION_DATA: {
       reason: 'could not fetch all stations',
       message: 'Please verify that you are connected to the internet or wait awhile and try again'
+    },
+    NO_DEPARTURE_STATIONS: {
+      reason: 'could not find any departures for the selected station',
+      message: 'Please select a different departure station or wait awhile and try again'
     }
   }
 
@@ -152,6 +156,14 @@ function App() {
         }
 
         const departures: DepartureProps[] = await data.json()
+
+        if (departures.length === 0) {
+          resetState()
+          console.error(ERRORS.NO_DEPARTURE_STATIONS)
+          setError(ERRORS.NO_DEPARTURE_STATIONS)
+          return
+        }
+
         const sortedDepartures: TransformedDepartureProps[] = transformDepartures(departures)
 
         setDepartures(sortedDepartures)
