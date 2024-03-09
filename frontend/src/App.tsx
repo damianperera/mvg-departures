@@ -79,6 +79,7 @@ function App() {
   const HELP_URL = 'https://github.com/damianperera/mvg-departures'
   const LICENSE_URL = 'https://github.com/damianperera/mvg-departures/blob/main/LICENSE'
   const SETTINGS_STATION_SELECTOR_DEFAULT_PLACEHOLDER = 'Select Departure Station'
+  const SETTINGS_STATION_SELECTOR_RESULTS_LIMIT = 10
   const ERRORS: { [key: string]: ErrorMessageProps } = {
     NO_DEPARTURE_DATA: {
       reason: 'could not fetch departures for the selected station',
@@ -231,7 +232,7 @@ function App() {
   useHotkeys('ctrl+0', () => triggerSettingsReset())
 
   /**
-   * Returns a fully defined <span /> based on the provided epoch
+   * Returns a HTML element based on the provided epoch
    * @param epochTime 
    * @returns <span />
    */
@@ -366,7 +367,9 @@ function App() {
     if (!allStations || allStations.length === 0) {
       allStations = await fetchStations()
     }
-    return allStations.filter((station) => station.label.toLowerCase().startsWith(searchValue.toLowerCase())).slice(0, 10)
+    return allStations.filter((station) => 
+      station.label.toLowerCase().startsWith(searchValue.toLowerCase())
+    ).slice(0, SETTINGS_STATION_SELECTOR_RESULTS_LIMIT)
   }
 
   const loadStationOptions = (searchValue: string) => {
@@ -377,7 +380,8 @@ function App() {
 
   const getCurrentStation = () => {
     const stationId = searchParams.get(QUERY_PARAM_STATION_ID) || DEFAULT_STATION_ID
-    return (searchStations !== undefined && searchStations.find((station) => station.id === stationId)?.label) || SETTINGS_STATION_SELECTOR_DEFAULT_PLACEHOLDER
+    return (searchStations !== undefined && searchStations.find((station) => station.id === stationId)?.label) 
+            || SETTINGS_STATION_SELECTOR_DEFAULT_PLACEHOLDER
   }
 
   return (
@@ -437,19 +441,29 @@ function App() {
                                 {destIndex === 0 && (
                                   <td 
                                     key={`transport-label-${index}-${destIndex}-${depIndex}`}
-                                    className='center' rowSpan={item.destinations.reduce((acc, dest) => acc + dest.departures.length, 0)}
+                                    className='center' 
+                                    rowSpan={item.destinations.reduce((acc, dest) => acc + dest.departures.length, 0)}
                                   >
                                     {item.label}
                                   </td>
                                 )}
-                                <td key={`destination-${index}-${destIndex}-${depIndex}`} className='left' rowSpan={dest.departures.length}>
+                                <td 
+                                  key={`destination-${index}-${destIndex}-${depIndex}`} 
+                                  className='left' 
+                                  rowSpan={dest.departures.length}
+                                >
                                   {dest.destination}
                                 </td>
                               </React.Fragment>
                             )}
                             <td key={`departure-${index}-${destIndex}-${depIndex}`} className='right'>
                               {departure.sev && (
-                                <div key={`sev-${index}-${destIndex}-${depIndex}`} className='departureNested departureSev'>{TEXT_SEV}</div>
+                                <div 
+                                  key={`sev-${index}-${destIndex}-${depIndex}`} 
+                                  className='departureNested departureSev'
+                                >
+                                  {TEXT_SEV}
+                                </div>
                               )}
                               {departure.cancelled && (
                                 <div
@@ -460,7 +474,12 @@ function App() {
                                 </div>
                               )}
                               {(departure.delayInMinutes > 0 && !departure.cancelled) && (
-                                <div key={`delayed-${index}-${destIndex}-${depIndex}`} className='departureNested departureDelayed'>{TEXT_DELAYED}</div>
+                                <div 
+                                  key={`delayed-${index}-${destIndex}-${depIndex}`}
+                                  className='departureNested departureDelayed'
+                                >
+                                  {TEXT_DELAYED}
+                                </div>
                               )}
                               {calculateRemainingTime(departure.realtimeDepartureTime)}
                             </td>
