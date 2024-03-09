@@ -316,13 +316,14 @@ function App() {
 	const triggerSettingsReload = () => resetApp(true)
 	const triggerSettingsReset = () => resetApp(false)
 	const triggerSettingsConfirm = () => {
-		resetState()
-		if (searchParams.get(QUERY_PARAM_STATION_ID) === newStation?.id) {
-			resetApp(false)
-		} else if (newStation) {
+		if (newStation && newStation.id !== searchParams.get(QUERY_PARAM_STATION_ID)) {
 			setSearchParams({ 'stationId': newStation.id })
 			resetApp(true)
 		}
+	}
+	const triggerSettingsCancel = () => {
+		setNewStation(undefined)
+		triggerSettingsModal()
 	}
 
 	const fetchStations = async () => {
@@ -401,8 +402,8 @@ function App() {
 								<button onClick={triggerSettingsHelp}>Help</button>
 								<button onClick={triggerSettingsReload}>Reload</button>
 								<button onClick={triggerSettingsReset}>Reset</button>
-								<button onClick={triggerSettingsConfirm}>Confirm</button>
-								<button onClick={triggerSettingsModal}>Cancel</button>
+								<button onClick={triggerSettingsConfirm} disabled={newStation?.id === searchParams.get(QUERY_PARAM_STATION_ID)}>Confirm</button>
+								<button onClick={triggerSettingsCancel}>Cancel</button>
 							</div>
 						</div>
 						<div className='license'>&copy;{new Date().getFullYear()} Damian Perera | <a href={LICENSE_URL}>AGPL-3.0 License</a></div>
