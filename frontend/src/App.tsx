@@ -2,20 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import './App.css'
 import { useHotkeys } from 'react-hotkeys-hook'
-
-type DepartureStationProps = {
-  type: string
-  latitude: string
-  longitude: string
-  place: string
-  name: string
-  globalId: string
-  divaId: string
-  transportTypes: []
-  surroundingPlanLink: string
-  aliases: string
-  tariffZones: string
-}
+import AsyncSelect from 'react-select/async';
 
 type DepartureProps = {
   plannedDepartureTime: string
@@ -51,30 +38,48 @@ type ErrorMessageProps = {
   message: string
 }
 
+type ZdmStationProps = {
+  name: string
+  place: string
+  id: string
+  divaId: number
+  abbreviation: string
+  tariffZones: string
+  products: string[]
+  latitude: number
+  longitude: number
+}
+
+type SearchStationProps = {
+  label: string // name
+  value: string // id
+  place: string
+  id: string
+  divaId: number
+  abbreviation: string
+  tariffZones: string
+  products: string[]
+  latitude: number
+  longitude: number
+}
+
 function App() {
   /**
    * Constants
    */
-  const DEFAULT_STATION = 'Forstenrieder Allee'
-  const TYPE_STATION = 'STATION'
+  const DEFAULT_STATION_ID = 'de:09162:1480'
   const TYPE_UBAHN = 'UBAHN'
   const TEXT_SEV = 'SEV'
   const TEXT_CANCELLED = 'CANCELLED'
   const TEXT_DELAYED = 'DELAYED'
-  const MVG_API_BASE_URI = 'https://www.mvg.de/api/fib/v2'
+  const MVG_FIB_API_BASE_URI = 'https://www.mvg.de/api/fib/v2'
+  const MVG_ZDM_API_BASE_URI = 'https://www.mvg.de/.rest/zdm'
   const DEPARTURE_REFRESH_INTERVAL = 60 * 1000
-  const QUERY_PARAM_STATION = 'station'
+  const QUERY_PARAM_STATION_ID = 'stationId'
   const HELP_URL = 'https://github.com/damianperera/mvg-departures'
   const LICENSE_URL = 'https://github.com/damianperera/mvg-departures/blob/main/LICENSE'
+  const SETTINGS_STATION_SELECTOR_DEFAULT_PLACEHOLDER = 'Select Departure Station'
   const ERRORS: { [key: string]: ErrorMessageProps } = {
-    NO_DEPARTURE_STATION_DATA: {
-      reason: 'could not fetch data for departure station',
-      message: 'Please verify that you are connected to the internet or wait awhile and try again'
-    },
-    NO_TARGET_STATION_IN_RESULTS: {
-      reason: 'could not find a departure station in your location',
-      message: 'Please verify that your station is correct or wait awhile and try again'
-    },
     NO_DEPARTURE_DATA: {
       reason: 'could not fetch departures for provided station',
       message: 'Please verify that you are connected to the internet or wait awhile and try again'
@@ -82,19 +87,23 @@ function App() {
     GENERIC_NETWORK_ERROR: {
       reason: 'could not communicate with upstream servers',
       message: 'Please verify that you are connected to the internet or wait awhile and try again'
+    },
+    NO_SEARCH_STATION_DATA: {
+      reason: 'could not fetch all stations',
+      message: 'Please verify that you are connected to the internet or wait awhile and try again'
     }
   }
 
   /**
    * Effects
    */
-  const [departureStation, setDepartureStation] = useState<DepartureStationProps>()
   const [departures, setDepartures] = useState<TransformedDepartureProps[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<ErrorMessageProps>()
   const [searchParams, setSearchParams] = useSearchParams()
   const [showSettingsModal, setShowSettingsModal] = useState(false)
-  const [userUpdatedStation, setUserUpdatedStation] = useState('')
+  const [searchStations, setSearchStations] = useState<SearchStationProps[]>([])
+  const [newStation, setNewStation] = useState<SearchStationProps>()
 
   /**
    * Reset All States
@@ -103,7 +112,6 @@ function App() {
     setShowSettingsModal(false)
     setIsLoading(false)
     resetErrors()
-    setDepartureStation(undefined)
     setDepartures([])
   }
 
@@ -126,56 +134,13 @@ function App() {
   }
 
   /**
-   * Load Departure Station
-   */
-  useEffect(() => {
-    const getDepartureStation = async () => {
-      setIsLoading(true)
-      try {
-        const station = searchParams.get(QUERY_PARAM_STATION) || DEFAULT_STATION
-        const data = await fetch(`${MVG_API_BASE_URI}/location?query=${encodeURI(station)}`, {
-          method: 'GET'
-        })
-
-        if (!data.ok) {
-          resetState()
-          console.error(ERRORS.NO_DEPARTURE_STATION_DATA)
-          setError(ERRORS.NO_DEPARTURE_STATION_DATA)
-          return
-        }
-
-        const stations = await data.json()
-        const targetStation = stations.find((e: DepartureStationProps) => e.type === TYPE_STATION)
-
-        if (targetStation == null) {
-          resetState()
-          console.error(ERRORS.NO_TARGET_STATION_IN_RESULTS)
-          setError(ERRORS.NO_TARGET_STATION_IN_RESULTS)
-          return
-        }
-
-        resetErrors()
-        setDepartureStation(targetStation)
-      } catch (error) {
-        resetState()
-        console.error(ERRORS.GENERIC_NETWORK_ERROR)
-        setError(ERRORS.GENERIC_NETWORK_ERROR)
-        return
-      }
-    }
-
-    getDepartureStation()
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams])
-
-  /**
    * Load Departures
    */
   useEffect(() => {
     const getDepartures = async () => {
       try {
-        const data = await fetch(`${MVG_API_BASE_URI}/departure?globalId=${departureStation?.globalId}&limit=20&offsetInMinutes=0`, {
+        const station = searchParams.get(QUERY_PARAM_STATION_ID) || DEFAULT_STATION_ID
+        const data = await fetch(`${MVG_FIB_API_BASE_URI}/departure?globalId=${station}&limit=20&offsetInMinutes=0`, {
           method: 'GET'
         })
 
@@ -201,12 +166,12 @@ function App() {
     }
 
     const intervalId = setInterval(getDepartures, DEPARTURE_REFRESH_INTERVAL)
-    departureStation != null && getDepartures()
+    getDepartures()
 
     return () => clearInterval(intervalId)
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [departureStation])
+  }, [searchParams])
 
   /**
    * Daily Reload
@@ -341,12 +306,66 @@ function App() {
   const triggerSettingsReset = () => resetApp(false)
   const triggerSettingsConfirm = () => {
     resetState()
-    if (searchParams.get(QUERY_PARAM_STATION) === userUpdatedStation) {
+    if (searchParams.get(QUERY_PARAM_STATION_ID) === newStation?.id) {
       resetApp(false)
-    } else {
-      setSearchParams({ 'station': userUpdatedStation })
+    } else if (newStation) {
+      setSearchParams({ 'stationId': newStation.id })
       resetApp(true)
     }
+  }
+
+  const fetchStations = async () => {
+    try {
+      const data = await fetch(`${MVG_ZDM_API_BASE_URI}/stations`, {
+        method: 'GET'
+      })
+
+      if (!data.ok) {
+        setSearchStations([])
+        console.error(ERRORS.NO_SEARCH_STATION_DATA)
+        return []
+      }
+
+      const stations: ZdmStationProps[] = await data.json()
+      const options: SearchStationProps[] = stations.map(station => ({
+        label: `${station.name}, ${station.place}`,
+        value: station.id,
+        place: station.place,
+        id: station.id,
+        divaId: station.divaId,
+        abbreviation: station.abbreviation,
+        tariffZones: station.tariffZones,
+        products: station.products,
+        latitude: station.latitude,
+        longitude: station.longitude
+      }))
+
+      setSearchStations(options)
+      return options
+    } catch (error) {
+      setSearchStations([])
+      console.error(ERRORS.GENERIC_NETWORK_ERROR)
+      return []
+    }
+  }
+
+  const getStations = async (searchValue: string) => {
+    let allStations = searchStations
+    if (!allStations || allStations.length === 0) {
+      allStations = await fetchStations()
+    }
+    return allStations.filter((station) => station.label.toLowerCase().startsWith(searchValue.toLowerCase())).slice(0, 10)
+  }
+
+  const loadStationOptions = (searchValue: string) => {
+    return new Promise<SearchStationProps[]>((resolve) => 
+      resolve(getStations(searchValue))
+    )
+  }
+
+  const getCurrentStation = () => {
+    const stationId = searchParams.get(QUERY_PARAM_STATION_ID) || DEFAULT_STATION_ID
+    return (searchStations !== undefined && searchStations.find((station) => station.id === stationId)?.label) || SETTINGS_STATION_SELECTOR_DEFAULT_PLACEHOLDER
   }
 
   return (
@@ -354,9 +373,16 @@ function App() {
       {showSettingsModal && (
         <div className='settings-container'>
           <div className='settings'>
-            <h2>Settings {departureStation !== undefined && (<div><small>{departureStation.name}</small></div>)}</h2>
+            <h2>Settings</h2>
             <div className='settings-content'>
-              <input autoFocus type='text' placeholder={'Enter Departure Station'} onChange={(e) => setUserUpdatedStation(e.target.value)} onClick={(e) => e.stopPropagation()} />
+              <AsyncSelect
+                className='settings-input' 
+                cacheOptions 
+                defaultOptions 
+                loadOptions={loadStationOptions} 
+                onChange={(selectedOption) => selectedOption && setNewStation(selectedOption)} 
+                placeholder={getCurrentStation()}
+              />
               <div className='settings-buttons'>
                 <button onClick={triggerSettingsHelp}>Help</button>
                 <button onClick={triggerSettingsReload}>Reload</button>
