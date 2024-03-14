@@ -285,6 +285,9 @@ function App() {
 			return acc
 		}, [])
 
+		// Sort transport types alphabetically
+		transformedArray.sort((a, b) => ('' + a.label).localeCompare(b.label, undefined, { numeric: true }))
+
 		// Sort the transformed array so that 'UBAHN' departures come first
 		transformedArray.sort((a, b) => {
 			const aHasUBahn = a.destinations.some(dest => dest.departures.some(dep => dep.transportType === TYPE_UBAHN))
