@@ -75,11 +75,13 @@ function App() {
 	const MVG_FIB_API_BASE_URI = 'https://www.mvg.de/api/fib/v2'
 	const MVG_ZDM_API_BASE_URI = 'https://www.mvg.de/.rest/zdm'
 	const DEPARTURE_REFRESH_INTERVAL = 60 * 1000
+	const DEPARTURE_RESULT_LIMIT = 20
 	const QUERY_PARAM_STATION_ID = 'stationId'
 	const HELP_URL = 'https://github.com/damianperera/mvg-departures'
 	const LICENSE_URL = 'https://github.com/damianperera/mvg-departures/blob/main/LICENSE'
 	const SETTINGS_STATION_SELECTOR_DEFAULT_PLACEHOLDER = 'Select Departure Station'
 	const SETTINGS_STATION_SELECTOR_RESULTS_LIMIT = 10
+	const CORS_PROXY_URI = 'https://corsproxy.io/?'
 	const ERRORS: { [key: string]: ErrorMessageProps } = {
 		NO_DEPARTURE_DATA: {
 			reason: 'could not fetch departures for the selected station',
@@ -145,7 +147,9 @@ function App() {
 		const getDepartures = async () => {
 			try {
 				const station = searchParams.get(QUERY_PARAM_STATION_ID) || DEFAULT_STATION_ID
-				const data = await fetch(`${MVG_FIB_API_BASE_URI}/departure?globalId=${station}&limit=20&offsetInMinutes=0`, {
+				const cacheBuster = `&cb=${Date.now()}`
+				const uri = `${CORS_PROXY_URI}${encodeURIComponent(`${MVG_FIB_API_BASE_URI}/departure?globalId=${station}&limit=${DEPARTURE_RESULT_LIMIT}${cacheBuster}`)}`
+				const data = await fetch(uri, {
 					method: 'GET'
 				})
 
