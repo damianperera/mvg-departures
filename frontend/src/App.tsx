@@ -79,7 +79,7 @@ function App() {
 	const QUERY_PARAM_STATION_ID = 'stationId'
 	const HELP_URL = 'https://github.com/damianperera/mvg-departures'
 	const LICENSE_URL = 'https://github.com/damianperera/mvg-departures/blob/main/LICENSE'
-	const SETTINGS_STATION_SELECTOR_DEFAULT_PLACEHOLDER = 'Select Departure Station'
+	const SETTINGS_STATION_SELECTOR_DEFAULT_PLACEHOLDER = 'Loading Departure Stations'
 	const SETTINGS_STATION_SELECTOR_RESULTS_LIMIT = 10
 	const CORS_PROXY_URI = 'https://corsproxy.io/?'
 	const ERRORS: { [key: string]: ErrorMessageProps } = {
