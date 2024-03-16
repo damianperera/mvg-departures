@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    name: 'React|Production Build'
+    name: '[FE] Production Build'
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
@@ -49,9 +49,8 @@ jobs:
         with:
           name: github-pages
           path: ${{ runner.temp }}/artifact.tar
-          retention-days: ${{ inputs.retention-days }}
   deploy:
-    name: 'React|Deploy'
+    name: '[FE] Deploy'
     needs: build
     # Grant GITHUB_TOKEN the permissions required to make a github-pages deployment
     permissions:

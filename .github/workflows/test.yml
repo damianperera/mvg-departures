@@ -9,7 +9,7 @@ on:
 
 jobs:
   jest:
-    name: 'React|Jest'
+    name: '[FE] Test'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -33,7 +33,7 @@ jobs:
         working-directory: frontend/
         run: yarn test
   lint:
-    name: 'Typsecript|Lint'
+    name: '[FE] Lint'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -57,7 +57,7 @@ jobs:
         working-directory: frontend/
         run: yarn lint
   react-build:
-    name: 'React|Test Build'
+    name: '[FE] Test Build'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -81,7 +81,7 @@ jobs:
         working-directory: frontend/
         run: yarn build
   pytest:
-    name: 'Python|Test'
+    name: '[BE] Test'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
