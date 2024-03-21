@@ -223,7 +223,7 @@ function App() {
     const printLog = (millisLeft: number) => {
       const dateObj = new Date(millisLeft)
       // eslint-disable-next-line no-console
-      console.log(`This application will be reloaded automatically in ${dateObj.getHours()} hours and ${dateObj.getMinutes()} minutes`)
+      console.info(`This application will be reloaded automatically in ${dateObj.getHours()} hours and ${dateObj.getMinutes()} minutes`)
     }
 
     dailyReload()
@@ -301,7 +301,6 @@ function App() {
         return 1
       } 
       return 0
-			
     })
 
     // Sort destinations alphabetically
