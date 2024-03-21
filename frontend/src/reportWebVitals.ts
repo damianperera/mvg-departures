@@ -1,7 +1,8 @@
 import { Metric } from 'web-vitals'
 import ReactGA from 'react-ga4'
+import { UaEventOptions } from 'react-ga4/types/ga4'
 
-const getAnalyticsId = () => process.env.GOOGLE_ANALYTICS_TRACKING_ID
+const analyticsId = process.env.GOOGLE_ANALYTICS_TRACKING_ID
 const isDev = () => process.env.NODE_ENV && process.env.NODE_ENV === 'development'
 
 const getEventValueFromMetric = (metric: Metric) => {
@@ -12,28 +13,29 @@ const getEventValueFromMetric = (metric: Metric) => {
 }
 
 const reportHandler = (metric: Metric) => {
-  const event = {
+  const event: UaEventOptions = {
     category: 'Web Vitals',
     action: metric.name,
     value: getEventValueFromMetric(metric),
     label: metric.id,
-    nonInteraction: true
+    nonInteraction: true,
+    transport: 'beacon'
   }
 
   if (isDev()) {
     console.debug(`[web-vitals-dev] ${event.action}: ${event.value}`, metric) // eslint-disable-line no-console
   }
   
-  if (getAnalyticsId()) {
+  if (analyticsId) {
     ReactGA.event(event)
   }
 }
 
 const reportWebVitals = () => {
-  if (getAnalyticsId()) {
+  if (analyticsId) {
     ReactGA.initialize([
       {
-        trackingId: getAnalyticsId()!
+        trackingId: analyticsId
       }
     ])
   }
