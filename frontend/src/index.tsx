@@ -30,18 +30,21 @@ const getEventValueFromMetric = (metric: Metric) => {
   }
   return Math.round(metric.value)
 }
- 
+
 const reportHandler = (metric: Metric) => {
-  ReactGA.event({
+  const event = {
     category: 'Web Vitals',
     action: metric.name,
     value: getEventValueFromMetric(metric),
     label: metric.id,
     nonInteraction: true
-  })
+  }
+
+  if (process.env.NODE_ENV && process.env.NODE_ENV === 'development') {
+    console.log(`[web-vitals-dev] ${metric.name}: ${metric.id}`, metric) // eslint-disable-line no-console
+  } else {
+    ReactGA.event(event)
+  }
 }
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals(reportHandler)
