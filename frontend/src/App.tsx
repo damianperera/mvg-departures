@@ -5,62 +5,64 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import AsyncSelect from 'react-select/async'
 
 type DepartureProps = {
-  plannedDepartureTime: string
-  realtime: boolean
+  bannerHash: string,
+  cancelled: boolean,
   delayInMinutes: number
-  realtimeDepartureTime: number
-  transportType: string
+  destination: string,
+  divaId: string,
   label: string
-  divaId: string
+  messages: any[], // eslint-disable-line @typescript-eslint/no-explicit-any
   network: string
-  trainType: string
-  destination: string
-  cancelled: boolean
-  sev: boolean
-  platform: number
-  platformChanged: boolean
-  messages: any[] // eslint-disable-line @typescript-eslint/no-explicit-any
-  bannerHash: string
-  occupancy: string
-  stopPointGlobalId: string
+  occupancy: string,
+  plannedDepartureTime: string,
+  platform: number,
+  platformChanged: boolean,
+  realtime: boolean,
+  realtimeDepartureTime: number,
+  sev: boolean, 
+  stopPointGlobalId: string,
+  trainType: string,
+  transportType: string
 }
 
 type TransformedDepartureProps = {
-  label: string
   destinations: {
+    departures: DepartureProps[],
     destination: string
-    departures: DepartureProps[]
-  }[]
+  }[],
+  label: string
 }
 
 type ErrorMessageProps = {
+  message: string,
   reason: string
-  message: string
 }
 
 type ZdmStationProps = {
-  name: string
-  place: string
+  abbreviation: string,
+  divaId: number,
   id: string
-  divaId: number
-  abbreviation: string
+  latitude: number,
+  longitude: number,
+  name: string,
+  place: string,
+  products: string[],
   tariffZones: string
-  products: string[]
-  latitude: number
-  longitude: number
 }
 
 type SearchStationProps = {
-  label: string // name
-  value: string // id
-  place: string
-  id: string
-  divaId: number
-  abbreviation: string
-  tariffZones: string
+  abbreviation: string, 
+  divaId: number, 
+  id: string,
+  label: string,
+  latitude: number,
+  longitude: number,
+  // id
+  place: string,
   products: string[]
-  latitude: number
-  longitude: number
+  tariffZones: string,
+  // name
+  value: string
 }
 
 function App() {
@@ -155,30 +157,30 @@ function App() {
 
 				if (!data.ok) {
 					resetState()
-					console.error(ERRORS.NO_DEPARTURE_DATA)
+					console.error(ERRORS.NO_DEPARTURE_DATA) // eslint-disable-line no-console
 					setError(ERRORS.NO_DEPARTURE_DATA)
 					return
 				}
 
-				const departures: DepartureProps[] = await data.json()
+				const departuresResponse: DepartureProps[] = await data.json()
 
-				if (departures.length === 0) {
+				if (departuresResponse.length === 0) {
 					resetState()
-					console.error(ERRORS.NO_DEPARTURE_STATIONS)
+					console.error(ERRORS.NO_DEPARTURE_STATIONS) // eslint-disable-line no-console
 					setError(ERRORS.NO_DEPARTURE_STATIONS)
 					return
 				}
 
-				const sortedDepartures: TransformedDepartureProps[] = transformDepartures(departures)
+				const sortedDepartures: TransformedDepartureProps[] = transformDepartures(departuresResponse)
 
 				setDepartures(sortedDepartures)
 				resetErrors()
 				setIsLoading(false)
-			} catch (error) {
+			} catch (e) {
 				resetState()
-				console.error(ERRORS.GENERIC_NETWORK_ERROR)
+				console.error(ERRORS.GENERIC_NETWORK_ERROR) // eslint-disable-line no-console
 				setError(ERRORS.GENERIC_NETWORK_ERROR)
-				return
+				
 			}
 		}
 
@@ -186,7 +188,7 @@ function App() {
 		getDepartures()
 
 		return () => clearInterval(intervalId)
-	}, [searchParams])
+	}, [searchParams]) // eslint-disable-line react-hooks/exhaustive-deps
 
 	/**
    * Daily Reload
@@ -220,11 +222,12 @@ function App() {
 
 		const printLog = (millisLeft: number) => {
 			const dateObj = new Date(millisLeft)
+			// eslint-disable-next-line no-console
 			console.log(`This application will be reloaded automatically in ${dateObj.getHours()} hours and ${dateObj.getMinutes()} minutes`)
 		}
 
 		dailyReload()
-	}, [])
+	})
 
 	/**
    * Hotkeys
@@ -260,16 +263,16 @@ function App() {
 			remainingTimeString += `${minutes} <small>${minutes === 1 ? 'min &nbsp;' : 'mins'}</small>`
 		}
 
-		return (<span dangerouslySetInnerHTML={{ __html: remainingTimeString }}></span>)
+		return (<span dangerouslySetInnerHTML={{ __html: remainingTimeString }} />) // eslint-disable-line react/no-danger
 	}
 
 	/**
    * Transform Departures
-   * @param departures DepartureProps[]
+   * @param sourceDepartures DepartureProps[]
    * @returns TransformedDepartureProps[]
    */
-	function transformDepartures(departures: DepartureProps[]): TransformedDepartureProps[] {
-		const transformedArray = departures.reduce((acc: TransformedDepartureProps[], departure: DepartureProps) => {
+	function transformDepartures(sourceDepartures: DepartureProps[]): TransformedDepartureProps[] {
+		const transformedArray = sourceDepartures.reduce((acc: TransformedDepartureProps[], departure: DepartureProps) => {
 			const { label, destination } = departure
 			const labelIndex = acc.findIndex(item => item.label === label)
 			if (labelIndex === -1) {
@@ -286,7 +289,7 @@ function App() {
 		}, [])
 
 		// Sort transport types alphabetically
-		transformedArray.sort((a, b) => ('' + a.label).localeCompare(b.label, undefined, { numeric: true }))
+		transformedArray.sort((a, b) => (`${  a.label}`).localeCompare(b.label, undefined, { numeric: true }))
 
 		// Sort the transformed array so that 'UBAHN' departures come first
 		transformedArray.sort((a, b) => {
@@ -294,11 +297,11 @@ function App() {
 			const bHasUBahn = b.destinations.some(dest => dest.departures.some(dep => dep.transportType === TYPE_UBAHN))
 			if (aHasUBahn && !bHasUBahn) {
 				return -1
-			} else if (!aHasUBahn && bHasUBahn) {
+			} if (!aHasUBahn && bHasUBahn) {
 				return 1
-			} else {
-				return 0
-			}
+			} 
+			return 0
+			
 		})
 
 		// Sort destinations alphabetically
@@ -319,7 +322,7 @@ function App() {
    * Triggers
    */
 	const triggerSettingsModal = () => setShowSettingsModal(!showSettingsModal)
-	const triggerSettingsHelp = () => window.location.href = HELP_URL
+	const triggerSettingsHelp = () => { window.location.href = HELP_URL }
 	const triggerSettingsReload = () => resetApp(true)
 	const triggerSettingsReset = () => resetApp(false)
 	const triggerSettingsConfirm = () => {
@@ -341,7 +344,7 @@ function App() {
 
 			if (!data.ok) {
 				setSearchStations([])
-				console.error(ERRORS.NO_SEARCH_STATION_DATA)
+				console.error(ERRORS.NO_SEARCH_STATION_DATA) // eslint-disable-line no-console
 				return []
 			}
 
@@ -361,9 +364,9 @@ function App() {
 
 			setSearchStations(options)
 			return options
-		} catch (error) {
+		} catch (e) {
 			setSearchStations([])
-			console.error(ERRORS.GENERIC_NETWORK_ERROR)
+			console.error(ERRORS.GENERIC_NETWORK_ERROR) // eslint-disable-line no-console
 			return []
 		}
 	}
@@ -378,11 +381,9 @@ function App() {
 		).slice(0, SETTINGS_STATION_SELECTOR_RESULTS_LIMIT)
 	}
 
-	const loadStationOptions = (searchValue: string) => {
-		return new Promise<SearchStationProps[]>((resolve) => 
-			resolve(getStations(searchValue))
-		)
-	}
+	const loadStationOptions = (searchValue: string) => new Promise<SearchStationProps[]>(
+		(resolve) => { resolve(getStations(searchValue)) }
+	)
 
 	const getCurrentStation = () => {
 		const stationId = searchParams.get(QUERY_PARAM_STATION_ID) || DEFAULT_STATION_ID
@@ -406,11 +407,11 @@ function App() {
 								placeholder={getCurrentStation()}
 							/>
 							<div className='settings-buttons'>
-								<button onClick={triggerSettingsHelp}>Help</button>
-								<button onClick={triggerSettingsReload}>Reload</button>
-								<button onClick={triggerSettingsReset}>Reset</button>
-								<button onClick={triggerSettingsConfirm} disabled={newStation?.id === searchParams.get(QUERY_PARAM_STATION_ID)}>Confirm</button>
-								<button onClick={triggerSettingsCancel}>Cancel</button>
+								<button type='button' onClick={triggerSettingsHelp}>Help</button>
+								<button type='button' onClick={triggerSettingsReload}>Reload</button>
+								<button type='button' onClick={triggerSettingsReset}>Reset</button>
+								<button type='button' onClick={triggerSettingsConfirm} disabled={newStation?.id === searchParams.get(QUERY_PARAM_STATION_ID)}>Confirm</button>
+								<button type='button' onClick={triggerSettingsCancel}>Cancel</button>
 							</div>
 						</div>
 						<div className='license'>&copy;{new Date().getFullYear()} Damian Perera | <a href={LICENSE_URL}>AGPL-3.0 License</a></div>
@@ -418,12 +419,14 @@ function App() {
 				</div>
 			)}
 			{isLoading && !error && (
+			// eslint-disable-next-line jsx-a11y/no-static-element-interactions
 				<div className='loading-container' onClick={triggerSettingsModal}>
-					<div className='loading-spinner'></div>
+					<div className='loading-spinner' />
 					<p className='loading-text'>Loading Departures</p>
 				</div>
 			)}
 			{error && (
+			// eslint-disable-next-line jsx-a11y/no-static-element-interactions
 				<div className='error-container' onClick={triggerSettingsModal}>
 					<p className='error-text'>
 						<span className='red'>error &#187;</span> {error.reason}<br />
@@ -431,72 +434,69 @@ function App() {
 					</p>
 				</div>
 			)}
+			{/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
 			<div className='departures-container' onClick={triggerSettingsModal}>
 				<table className='departures'>
 					<tbody>
-						{departures.map((item, index) => {
-							return (
-								<React.Fragment key={index}>
-									{item.destinations.map((dest, destIndex) => {
-										return (
-											<React.Fragment key={`${index}-${destIndex}`}>
-												{dest.departures.map((departure, depIndex) => (
-													<tr key={`${index}-${destIndex}-${depIndex}`}>
-														{depIndex === 0 && (
-															<React.Fragment>
-																{destIndex === 0 && (
-																	<td 
-																		key={`transport-label-${index}-${destIndex}-${depIndex}`}
-																		className='center' 
-																		rowSpan={item.destinations.reduce((acc, dest) => acc + dest.departures.length, 0)}
-																	>
-																		{item.label}
-																	</td>
-																)}
-																<td 
-																	key={`destination-${index}-${destIndex}-${depIndex}`} 
-																	className='left' 
-																	rowSpan={dest.departures.length}
-																>
-																	{dest.destination}
-																</td>
-															</React.Fragment>
+						{departures.map((item, index) => (
+							<React.Fragment key={index}>
+								{item.destinations.map((dest, destIndex) => (
+									<React.Fragment key={`${index}-${destIndex}`}>
+										{dest.departures.map((departure, depIndex) => (
+											<tr key={`${index}-${destIndex}-${depIndex}`}>
+												{depIndex === 0 && (
+													<>
+														{destIndex === 0 && (
+															<td 
+																key={`transport-label-${index}-${destIndex}-${depIndex}`}
+																className='center' 
+																rowSpan={item.destinations.reduce((acc, destT) => acc + destT.departures.length, 0)}
+															>
+																{item.label}
+															</td>
 														)}
-														<td key={`departure-${index}-${destIndex}-${depIndex}`} className='right'>
-															{departure.sev && (
-																<div 
-																	key={`sev-${index}-${destIndex}-${depIndex}`} 
-																	className='departureNested departureSev'
-																>
-																	{TEXT_SEV}
-																</div>
-															)}
-															{departure.cancelled && (
-																<div
-																	key={`cancelled-${index}-${destIndex}-${depIndex}`}
-																	className='departureNested departureCancelled blinking'
-																>
-																	{TEXT_CANCELLED}
-																</div>
-															)}
-															{(departure.delayInMinutes > 0 && !departure.cancelled) && (
-																<div 
-																	key={`delayed-${index}-${destIndex}-${depIndex}`}
-																	className='departureNested departureDelayed'
-																>
-																	{TEXT_DELAYED}
-																</div>
-															)}
-															{calculateRemainingTime(departure.realtimeDepartureTime)}
+														<td 
+															key={`destination-${index}-${destIndex}-${depIndex}`} 
+															className='left' 
+															rowSpan={dest.departures.length}
+														>
+															{dest.destination}
 														</td>
-													</tr>
-												))}
-											</React.Fragment>
-										)
-									})}
-								</React.Fragment>
-							)
-						})}
+													</>
+												)}
+												<td key={`departure-${index}-${destIndex}-${depIndex}`} className='right'>
+													{departure.sev && (
+														<div 
+															key={`sev-${index}-${destIndex}-${depIndex}`} 
+															className='departureNested departureSev'
+														>
+															{TEXT_SEV}
+														</div>
+													)}
+													{departure.cancelled && (
+														<div
+															key={`cancelled-${index}-${destIndex}-${depIndex}`}
+															className='departureNested departureCancelled blinking'
+														>
+															{TEXT_CANCELLED}
+														</div>
+													)}
+													{(departure.delayInMinutes > 0 && !departure.cancelled) && (
+														<div 
+															key={`delayed-${index}-${destIndex}-${depIndex}`}
+															className='departureNested departureDelayed'
+														>
+															{TEXT_DELAYED}
+														</div>
+													)}
+													{calculateRemainingTime(departure.realtimeDepartureTime)}
+												</td>
+											</tr>
+										))}
+									</React.Fragment>
+								))}
+							</React.Fragment>
+						))}
 					</tbody>
 				</table>
 			</div>
