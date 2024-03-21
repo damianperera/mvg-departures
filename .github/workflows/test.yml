@@ -1,4 +1,4 @@
-name: Test
+name: CI
 on:
   pull_request_target:
     branches: ['main']
@@ -12,13 +12,13 @@ jobs:
     name: '[FE] Test'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@main
+      - uses: actions/setup-node@main
         with:
           node-version: 16
       - name: Cache dependencies
         id: cache-nodemodules
-        uses: actions/cache@v3
+        uses: actions/cache@main
         env:
           cache-name: cache-node-modules
         with:
@@ -36,13 +36,13 @@ jobs:
     name: '[FE] Lint'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@main
+      - uses: actions/setup-node@main
         with:
           node-version: 16
       - name: Cache dependencies
         id: cache-nodemodules
-        uses: actions/cache@v3
+        uses: actions/cache@main
         env:
           cache-name: cache-node-modules
         with:
@@ -60,13 +60,13 @@ jobs:
     name: '[FE] Test Build'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@main
+      - uses: actions/setup-node@main
         with:
           node-version: 16
       - name: Cache dependencies
         id: cache-nodemodules
-        uses: actions/cache@v3
+        uses: actions/cache@main
         env:
           cache-name: cache-node-modules
         with:
@@ -84,8 +84,8 @@ jobs:
     name: '[BE] Test'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@main
+      - uses: actions/setup-python@main
         with:
           python-version: '3.11'
           cache: 'pip'
