@@ -33,6 +33,8 @@ jobs:
       - name: Build
         working-directory: frontend/
         run: yarn build
+        env:
+          GOOGLE_ANALYTICS_TRACKING_ID: ${{ secrets.GOOGLE_ANALYTICS_TRACKING_ID }}
       - name: Package
         working-directory: frontend/
         shell: bash

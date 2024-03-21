@@ -1,6 +1,9 @@
 import { Metric } from 'web-vitals'
 import ReactGA from 'react-ga4'
 
+const getAnalyticsId = () => process.env.GOOGLE_ANALYTICS_TRACKING_ID
+const isDev = () => process.env.NODE_ENV && process.env.NODE_ENV === 'development'
+
 const getEventValueFromMetric = (metric: Metric) => {
   if (metric.name === 'CLS') {
     return Math.round(metric.value * 1000)
@@ -17,19 +20,23 @@ const reportHandler = (metric: Metric) => {
     nonInteraction: true
   }
 
-  if (process.env.NODE_ENV && process.env.NODE_ENV === 'development') {
+  if (isDev()) {
     console.debug(`[web-vitals-dev] ${event.action}: ${event.value}`, metric) // eslint-disable-line no-console
-  } else {
+  }
+  
+  if (getAnalyticsId()) {
     ReactGA.event(event)
   }
 }
 
 const reportWebVitals = () => {
-  ReactGA.initialize([
-    {
-      trackingId: 'G-XEN77GP035'
-    }
-  ])
+  if (getAnalyticsId()) {
+    ReactGA.initialize([
+      {
+        trackingId: getAnalyticsId()!
+      }
+    ])
+  }
   import('web-vitals').then(({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
     getCLS(reportHandler)
     getFID(reportHandler)
