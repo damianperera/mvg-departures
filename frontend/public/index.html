@@ -53,6 +53,21 @@
     <meta itemprop="image" content="%PUBLIC_URL%/banner.jpg">
 
     <!--
+      Google Structured Data (https://developers.google.com/search/docs/appearance/structured-data/software-app)
+    -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": ["WebContent", "WebApplication"],
+        "name": "MVG Departures",
+        "operatingSystem": ["LINUX", "WINDOWS", "OSX"],
+        "applicationCategory": "HomeApplication",
+        "countriesSupported": "DE",
+        "screenshot": "%PUBLIC_URL%/banner.jpg"
+      }
+    </script>
+
+    <!--
       Notice the use of %PUBLIC_URL% in the tags above.
       It will be replaced with the URL of the `public` folder during the build.
       Only files inside the `public` folder can be referenced from the HTML.
