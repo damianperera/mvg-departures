@@ -1,10 +1,11 @@
-name: Dependabot Approve & Merge
+name: Dependabot
 on: 
   pull_request_target:
     branches: ["main"]
 
 jobs:
   dependabot:
+    name: 'Approve & Merge'
     runs-on: ubuntu-latest
     if: ${{ github.actor == 'dependabot[bot]' }}
     permissions: write-all
