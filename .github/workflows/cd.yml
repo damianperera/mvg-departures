@@ -9,6 +9,7 @@ on:
 
 jobs:
   build:
+    environment: github-pages
     name: '[FE] Production Build'
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
