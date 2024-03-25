@@ -10,8 +10,7 @@ on:
 jobs:
   jest:
     name: '[FE] Test'
-    environment:
-      name: ${{ github.ref_name }}
+    environment: ci
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@main
@@ -36,8 +35,7 @@ jobs:
         run: yarn test
   lint:
     name: '[FE] Lint'
-    environment:
-      name: ${{ github.ref_name }}
+    environment: ci
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@main
@@ -62,8 +60,7 @@ jobs:
         run: yarn lint
   react-build:
     name: '[FE] Test Build'
-    environment:
-      name: ${{ github.ref_name }}
+    environment: ci
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@main
@@ -88,8 +85,7 @@ jobs:
         run: yarn build
   pytest:
     name: '[BE] Test'
-    environment:
-      name: ${{ github.ref_name }}
+    environment: ci
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@main
