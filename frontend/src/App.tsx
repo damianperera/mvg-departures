@@ -415,7 +415,7 @@ function App() {
                 <button type='button' onClick={triggerSettingsCancel}>Cancel</button>
               </div>
             </div>
-            <div className='license'>&copy;{new Date().getFullYear()} Damian Perera | <a href={LICENSE_URL}>AGPL-3.0 License</a> | v{APP_VERSION} on commit <pre>{APP_COMMIT}</pre></div>
+            <div className='license'>v{APP_VERSION} (<pre>{APP_COMMIT}</pre>) | &copy;{new Date().getFullYear()} Damian Perera | <a href={LICENSE_URL}>AGPL-3.0 License</a></div>
           </div>
         </div>
       )}
