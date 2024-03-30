@@ -84,6 +84,8 @@ function App() {
   const SETTINGS_STATION_SELECTOR_DEFAULT_PLACEHOLDER = 'Loading Departure Stations'
   const SETTINGS_STATION_SELECTOR_RESULTS_LIMIT = 10
   const CORS_PROXY_URI = 'https://corsproxy.io/?'
+  const APP_COMMIT = process.env.REACT_APP_COMMIT
+  const APP_VERSION = process.env.REACT_APP_VERSION
   const ERRORS: { [key: string]: ErrorMessageProps } = {
     NO_DEPARTURE_DATA: {
       reason: 'could not fetch departures for the selected station',
@@ -413,7 +415,7 @@ function App() {
                 <button type='button' onClick={triggerSettingsCancel}>Cancel</button>
               </div>
             </div>
-            <div className='license'>&copy;{new Date().getFullYear()} Damian Perera | <a href={LICENSE_URL}>AGPL-3.0 License</a></div>
+            <div className='license'>&copy;{new Date().getFullYear()} Damian Perera | <a href={LICENSE_URL}>AGPL-3.0 License</a> | v{APP_VERSION} on commit <pre>{APP_COMMIT}</pre></div>
           </div>
         </div>
       )}
