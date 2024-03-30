@@ -89,19 +89,20 @@
   text-align: center ;
   font-size: calc(1vw + 3px) !important;
   position: absolute;
-  margin-left: 0.5%;
+  margin-left: calc(1vw - 13px);
   border: none !important;
   padding-top: 1%;
   padding-left: 3% !important;
   padding-right: 3% !important;
   padding-bottom: 1% !important;
   line-height: inherit;
+  height: 1.5vw;
 }
 
 .departureSev {
   background-color: purple !important;
   color: white !important;
-  margin-top: 7%;
+  margin-top: calc(2vw + 2px);
   font-weight: bold;
 }
 
@@ -109,7 +110,7 @@
   background-color: red !important;
   color: white;
   font-weight: bold;
-  margin-top: calc(1.5% - 4px);
+  margin-top: calc(0.5vw - 7px);
   z-index: 999;
 }
 
@@ -117,7 +118,7 @@
   background-color: #ff8503;
   color: white;
   font-weight: bold;
-  margin-top: calc(1.5% - 4px);
+  margin-top: calc(0.5vw - 7px);
 }
 
 .loading-container {
