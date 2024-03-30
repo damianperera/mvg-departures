@@ -18,7 +18,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "export REACT_APP_COMMIT=$(git rev-parse --short HEAD) export REACT_APP_VERSION=$(date +%Y.%m.%d.%H%M%S) && react-scripts build",
+    "build": "export REACT_APP_COMMIT=$(git rev-parse --short HEAD) && export REACT_APP_VERSION=$(date +%Y.%m.%d.%H%M%S) && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint .",
