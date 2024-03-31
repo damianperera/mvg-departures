@@ -285,4 +285,5 @@
   background-color: rgba(211, 211, 211, 0.5);
   border-radius: 3px;
   padding: 2px;
+  cursor: pointer;
 }

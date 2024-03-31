@@ -79,8 +79,8 @@ function App() {
   const DEPARTURE_REFRESH_INTERVAL = 60 * 1000
   const DEPARTURE_RESULT_LIMIT = 20
   const QUERY_PARAM_STATION_ID = 'stationId'
-  const HELP_URL = 'https://github.com/damianperera/mvg-departures'
-  const LICENSE_URL = 'https://github.com/damianperera/mvg-departures/blob/main/LICENSE'
+  const APP_REPOSITORY_URL = 'https://github.com/damianperera/mvg-departures'
+  const LICENSE_URL = `${APP_REPOSITORY_URL}/blob/main/LICENSE`
   const SETTINGS_STATION_SELECTOR_DEFAULT_PLACEHOLDER = 'Loading Departure Stations'
   const SETTINGS_STATION_SELECTOR_RESULTS_LIMIT = 10
   const CORS_PROXY_URI = 'https://corsproxy.io/?'
@@ -324,7 +324,7 @@ function App() {
    * Triggers
    */
   const triggerSettingsModal = () => setShowSettingsModal(!showSettingsModal)
-  const triggerSettingsHelp = () => { window.location.href = HELP_URL }
+  const triggerSettingsHelp = () => { window.location.href = APP_REPOSITORY_URL }
   const triggerSettingsReload = () => resetApp(true)
   const triggerSettingsReset = () => resetApp(false)
   const triggerSettingsConfirm = () => {
@@ -337,6 +337,7 @@ function App() {
     setNewStation(undefined)
     triggerSettingsModal()
   }
+  const triggerSettingsVersion = () => { window.location.href = `${APP_REPOSITORY_URL}/commit/${APP_COMMIT}` }
 
   const fetchStations = async () => {
     try {
@@ -416,7 +417,12 @@ function App() {
                 <button type='button' onClick={triggerSettingsCancel}>Cancel</button>
               </div>
             </div>
-            <div className='license'>&copy;{new Date().getFullYear()} Damian Perera &middot; <a href={LICENSE_URL}>AGPL-3.0 License</a> &middot; <pre>{VERSION}</pre></div>
+            <div className='license'>
+              &copy;{new Date().getFullYear()} Damian Perera &middot;&nbsp;
+              <a href={LICENSE_URL}>AGPL-3.0 License</a> &middot;&nbsp;
+              {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
+              <pre onClick={triggerSettingsVersion}>{VERSION}</pre>
+            </div>
           </div>
         </div>
       )}
