@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.actor == 'dependabot[bot]' }}
     permissions: write-all
-    environment: dependabot
+    environment: ci
     steps:
       - name: Fetch Dependabot Metadata
         id: metadata
