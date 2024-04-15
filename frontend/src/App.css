@@ -270,7 +270,7 @@
 
 .license {
   margin-top: 2%;
-  font-size: 0.8vw;
+  font-size: 0.6vw;
   border-top: 1px solid lightgray;
   padding-top: 2%;
 }
@@ -286,5 +286,4 @@
   border-radius: 3px;
   padding: 2px;
   cursor: pointer;
-  font-size: smaller;
 }
