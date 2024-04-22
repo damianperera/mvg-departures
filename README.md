@@ -12,13 +12,17 @@ To switch your station click on the screen or press `Ctrl` + `1`, click on the s
 
 > Reloading the application will not clear the station. In order to reset the application to defaults click on the `Reset` button in the settings screen or press `Ctrl` + `0`.
 
+# Updates
+
+The application will automatically fetch and apply the latest update at 03:00 am CET/CEST. Dependabot updates have been configured to ensure the latest security vulnerabilities are patched as soon as they are made available.
+
 # Shortcuts
 
 - `Ctrl` + `1` - Open settings
-- `Ctrl` + `9` - Settings reload
+- `Ctrl` + `9` - Reload app
 - `Ctrl` + `0` - Reset app to defaults
 
 # Installation Recommendation
 
-Use an RPi or similar low-powered SoC together with a low-energy e-Ink display as a permanent installation for this tracker.
+Use an RPi or similar low-powered SBC with a low-energy e-Ink display as a permanent installation for this tracker.
   
