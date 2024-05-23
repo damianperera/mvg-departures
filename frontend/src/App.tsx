@@ -473,31 +473,29 @@ function App() {
                           </>
                         )}
                         <td key={`departure-${index}-${destIndex}-${depIndex}`} className='right'>
-                          {departure.sev && (
-                            <div 
-                              key={`sev-${index}-${destIndex}-${depIndex}`} 
-                              className='departureNested departureSev'
-                            >
-                              {TEXT_SEV}
+                          <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <div className='departureNested'>
+                              {departure.cancelled ? (
+                                <div key={`cancelled-${index}-${destIndex}-${depIndex}`} className='departureCancelled blinking'>
+                                  {TEXT_CANCELLED}
+                                </div>
+                              ) : (
+                                departure.delayInMinutes > 0 && (
+                                  <div key={`delayed-${index}-${destIndex}-${depIndex}`} className='departureDelayed'>
+                                    {TEXT_DELAYED}
+                                  </div>
+                                )
+                              )}
+                              {departure.sev && (
+                                <div key={`sev-${index}-${destIndex}-${depIndex}`} className='departureSev'>
+                                  {TEXT_SEV}
+                                </div>
+                              )}
                             </div>
-                          )}
-                          {departure.cancelled && (
-                            <div
-                              key={`cancelled-${index}-${destIndex}-${depIndex}`}
-                              className='departureNested departureCancelled blinking'
-                            >
-                              {TEXT_CANCELLED}
+                            <div style={{ marginLeft: 'auto' }}>
+                              {calculateRemainingTime(departure.realtimeDepartureTime)}
                             </div>
-                          )}
-                          {(departure.delayInMinutes > 0 && !departure.cancelled) && (
-                            <div 
-                              key={`delayed-${index}-${destIndex}-${depIndex}`}
-                              className='departureNested departureDelayed'
-                            >
-                              {TEXT_DELAYED}
-                            </div>
-                          )}
-                          {calculateRemainingTime(departure.realtimeDepartureTime)}
+                          </div>
                         </td>
                       </tr>
                     ))}

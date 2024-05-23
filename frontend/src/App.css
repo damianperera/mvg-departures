@@ -73,6 +73,7 @@
 .right {
   text-align: right;
   padding-right: 1% !important;
+  vertical-align: middle;
 }
 
 /* Responsive styles */
@@ -83,42 +84,36 @@
 }
 
 .departureNested {
-  max-width: 25% !important;
-  width: 25% !important;
-  min-width: 25% !important;
-  text-align: center ;
-  font-size: calc(1vw + 3px) !important;
-  position: absolute;
-  margin-left: calc(1vw - 13px);
-  border: none !important;
-  padding-top: 1%;
-  padding-left: 3% !important;
-  padding-right: 3% !important;
-  padding-bottom: 1% !important;
-  line-height: inherit;
-  height: 1.5vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 30%;
+  font-size: calc(1vw + 3px);
+  text-align: center;
+  height: 100%;
 }
 
+.departureCancelled,
+.departureDelayed,
 .departureSev {
-  background-color: purple !important;
-  color: white !important;
-  margin-top: calc(2vw + 2px);
+  margin: 0;
+  padding: 2px 0;
   font-weight: bold;
+  color: white;
+  min-width: 100%;
 }
 
 .departureCancelled {
-  background-color: red !important;
-  color: white;
-  font-weight: bold;
-  margin-top: calc(0.5vw - 7px);
-  z-index: 999;
+  background-color: red;
 }
 
 .departureDelayed {
   background-color: #ff8503;
-  color: white;
-  font-weight: bold;
-  margin-top: calc(0.5vw - 7px);
+}
+
+.departureSev {
+  background-color: purple;
 }
 
 .loading-container {
