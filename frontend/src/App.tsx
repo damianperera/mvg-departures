@@ -74,7 +74,7 @@ function App() {
   const TEXT_SEV = 'SEV'
   const TEXT_CANCELLED = 'CANCELLED'
   const TEXT_DELAYED = 'DELAYED'
-  const MVG_FIB_API_BASE_URI = 'https://www.mvg.de/api/fib/v2'
+  const MVG_FIB_API_BASE_URI = 'https://www.mvg.de/api/bgw-pt/v3'
   const MVG_ZDM_API_BASE_URI = 'https://www.mvg.de/.rest/zdm'
   const DEPARTURE_REFRESH_INTERVAL = 60 * 1000
   const DEPARTURE_RESULT_LIMIT = 20
@@ -153,7 +153,7 @@ function App() {
       try {
         const station = searchParams.get(QUERY_PARAM_STATION_ID) || DEFAULT_STATION_ID
         const cacheBuster = `&cb=${Date.now()}`
-        const uri = `${CORS_PROXY_URI}${encodeURIComponent(`${MVG_FIB_API_BASE_URI}/departure?globalId=${station}&limit=${DEPARTURE_RESULT_LIMIT}${cacheBuster}`)}`
+        const uri = `${CORS_PROXY_URI}${encodeURIComponent(`${MVG_FIB_API_BASE_URI}/departures?globalId=${station}&limit=${DEPARTURE_RESULT_LIMIT}${cacheBuster}`)}`
         const data = await fetch(uri, {
           method: 'GET'
         })
