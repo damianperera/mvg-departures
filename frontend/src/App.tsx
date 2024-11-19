@@ -34,7 +34,7 @@ type TransformedDepartureProps = {
 }
 
 type ErrorMessageProps = {
-  message: string,
+  action: string,
   reason: string
 }
 
@@ -81,7 +81,7 @@ function App() {
   const QUERY_PARAM_STATION_ID = 'stationId'
   const APP_REPOSITORY_URL = 'https://github.com/damianperera/mvg-departures'
   const LICENSE_URL = `${APP_REPOSITORY_URL}/blob/main/LICENSE`
-  const SETTINGS_STATION_SELECTOR_DEFAULT_PLACEHOLDER = 'Loading Departure Stations'
+  const SETTINGS_STATION_SELECTOR_DEFAULT_PLACEHOLDER = 'Loading Departure Stations...'
   const SETTINGS_STATION_SELECTOR_RESULTS_LIMIT = 10
   const CORS_PROXY_URI = 'https://corsproxy.io/?'
   const APP_COMMIT = process.env.REACT_APP_COMMIT || 'LOCAL'
@@ -90,19 +90,19 @@ function App() {
   const ERRORS: { [key: string]: ErrorMessageProps } = {
     NO_DEPARTURE_DATA: {
       reason: 'could not fetch departures for the selected station',
-      message: 'Please verify that you are connected to the internet or wait awhile and try again'
+      action: 'Please verify that you are connected to the internet or wait awhile and try again'
     },
     GENERIC_NETWORK_ERROR: {
       reason: 'could not communicate with upstream servers',
-      message: 'Please verify that you are connected to the internet or wait awhile and try again'
+      action: 'Please verify that you are connected to the internet or wait awhile and try again'
     },
     NO_SEARCH_STATION_DATA: {
       reason: 'could not fetch all stations',
-      message: 'Please verify that you are connected to the internet or wait awhile and try again'
+      action: 'Please verify that you are connected to the internet or wait awhile and try again'
     },
     NO_DEPARTURE_STATIONS: {
       reason: 'could not find any departures for the selected station',
-      message: 'Please select a different departure station or wait awhile and try again'
+      action: 'Please select a different departure station or wait awhile and try again'
     }
   }
 
@@ -379,6 +379,7 @@ function App() {
     if (!allStations || allStations.length === 0) {
       allStations = await fetchStations()
     }
+    console.log(allStations) // eslint-disable-line no-console
     return allStations.filter((station) => 
       station.label.toLowerCase().startsWith(searchValue.toLowerCase())
     ).slice(0, SETTINGS_STATION_SELECTOR_RESULTS_LIMIT)
@@ -438,7 +439,7 @@ function App() {
         <div className='error-container' onClick={triggerSettingsModal}>
           <p className='error-text'>
             <span className='red'>error &#187;</span> {error.reason}<br />
-            <small>{error.message}</small>
+            <small>{error.action}</small>
           </p>
         </div>
       )}
