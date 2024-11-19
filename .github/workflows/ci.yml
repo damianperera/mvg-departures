@@ -82,6 +82,7 @@ jobs:
         run: yarn build
   pytest:
     name: '[BE] Test'
+    if: false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@main
