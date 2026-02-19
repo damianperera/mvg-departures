@@ -154,7 +154,7 @@ function App() {
         const station = searchParams.get(QUERY_PARAM_STATION_ID) || DEFAULT_STATION_ID
         const cacheBuster = `&cb=${Date.now()}`
         // const uri = `${CORS_PROXY_URI}${encodeURIComponent(`${MVG_FIB_API_BASE_URI}/departures?globalId=${station}&limit=${DEPARTURE_RESULT_LIMIT}${cacheBuster}`)}`
-        const uri = `${encodeURIComponent(`${MVG_FIB_API_BASE_URI}/departures?globalId=${station}&limit=${DEPARTURE_RESULT_LIMIT}${cacheBuster}`)`
+        const uri = `${CORS_PROXY_URI}${MVG_FIB_API_BASE_URI}/departures?globalId=${station}&limit=${DEPARTURE_RESULT_LIMIT}${cacheBuster}`
 		const data = await fetch(uri, {
           method: 'GET'
         })
