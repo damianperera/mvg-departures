@@ -83,7 +83,7 @@ function App() {
   const LICENSE_URL = `${APP_REPOSITORY_URL}/blob/main/LICENSE`
   const SETTINGS_STATION_SELECTOR_DEFAULT_PLACEHOLDER = 'Loading Departure Stations...'
   const SETTINGS_STATION_SELECTOR_RESULTS_LIMIT = 10
-  const CORS_PROXY_URI = 'https://corsproxy.io/?'
+  const CORS_PROXY_URI = 'https://cors-anywhere.com/'
   const APP_COMMIT = process.env.REACT_APP_COMMIT || 'LOCAL'
   const APP_VERSION = process.env.REACT_APP_VERSION || 'DEV'
   const VERSION = `v${APP_VERSION}.${APP_COMMIT}`
