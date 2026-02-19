@@ -155,7 +155,7 @@ function App() {
         const cacheBuster = `&cb=${Date.now()}`
         // const uri = `${CORS_PROXY_URI}${encodeURIComponent(`${MVG_FIB_API_BASE_URI}/departures?globalId=${station}&limit=${DEPARTURE_RESULT_LIMIT}${cacheBuster}`)}`
         const uri = `${CORS_PROXY_URI}${MVG_FIB_API_BASE_URI}/departures?globalId=${station}&limit=${DEPARTURE_RESULT_LIMIT}${cacheBuster}`
-		const data = await fetch(uri, {
+        const data = await fetch(uri, {
           method: 'GET'
         })
 
